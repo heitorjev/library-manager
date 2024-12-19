@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Moderna</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-book"></i> Biblioteca Moderna
+                </div>
+                <button class="login-btn" onclick="openPopup()">
+                    <i class="fas fa-user"></i> Logar
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="popup" id="loginPopup">
+        <div class="popup-content">
+            <h2>Escolha o tipo de usuário</h2>
+            <button class="popup-btn" onclick="closePopup()">
+                <i class="fas fa-user-graduate"></i> Aluno
+            </button>
+            <button class="popup-btn" onclick="closePopup()">
+                <i class="fas fa-user-tie"></i> Bibliotecário
+            </button>
+        </div>
+    </div>
+
+    <main class="container">
+        <table id="searchTable">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Ano</th>
+                    <th>Disponível</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- do a forEach ejs  -->
+                <% books.forEach(book => { %>
+                    <tr>
+                        <td><%= book.title %></td>
+                        <td><%= book.autor %></td>
+                        <td><%= book.isbn %></td>
+                        <td><%= book.available ? 'Sim' : 'Não' %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        function openPopup() {
+            document.getElementById("loginPopup").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("loginPopup").style.display = "none";
+        }
+    </script>
+</body>
+</html>
