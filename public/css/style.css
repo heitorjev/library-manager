@@ -14,7 +14,7 @@
 header {
     background-color: #ffffff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    position: fixed;
+    margin-bottom: 2.5rem;
     width: 100%;
     top: 0;
     z-index: 1000;
@@ -63,32 +63,40 @@ nav {
     width: 300px;
     padding: 2rem;
     border-radius: 8px;
-    position: absolute;
+    position: relative;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
 }
 
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.3s;
+}
+
+.close-btn:hover {
+    color: #4CAF50;
+}
+
 .popup-btn {
+    /* Remover estilos conflitantes com Bootstrap */
     display: block;
     width: 100%;
-    padding: 0.5rem;
     margin-top: 1rem;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
-.popup-btn:hover {
-    background-color: #45a049;
-}
-
 main {
-    margin-top: 100px;
+    margin-top: 60px; /* Ajustar a margem superior para corresponder à altura do header */
     padding: 2rem 0;
     display: flex;
     flex-direction: column;
@@ -129,9 +137,24 @@ th {
 / TABLE
 /
 */
-.dataTables_length, .dataTables_filter{
-    display: inline;
+.container{
+    margin-bottom: 2.5rem;
 }
-.dataTables_length{
-   float: right;
-}   
+.mainTable{
+    padding: 25px; 
+    background-color: #ddd;
+    border-radius: 10px ;
+}
+table{
+    background-color: #fff;
+    padding-top: 10px;
+}
+table.dataTable {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+label .form-control {
+    border-color: #45a049;
+}
