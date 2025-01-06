@@ -31,6 +31,9 @@ app.get('/', async (req, res) => {
     const books = await Book.find({})
     res.render('index', { books: books })
 })
+app.get('/login', async (req, res) => {
+    res.render('login')
+})
 
 app.listen(process.env.PORT, () => {    
     console.warn("SERVIDOR INICIADO")
