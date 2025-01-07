@@ -11,21 +11,12 @@ const returningSchema = new mongoose.Schema({
         required: true,
         default: Date.now
     },
-    observations: {
-        type: String,
-        default: ''
-    },
-    returnedQuantity: {
-        type: Number,
-        required: true,
-        min: 1
-    },
-    receivedBy: {
+    studentID: {
         type: String,
         required: true
-    }
+    },
 }, {
     timestamps: true
 })
 
-module.exports = mongoose.model('returning', returningSchema)
+module.exports = mongoose.model('return', returningSchema)

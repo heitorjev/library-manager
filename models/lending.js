@@ -33,4 +33,4 @@ const lendingSchema = new mongoose.Schema({
     timestamps: true
 })
 
-module.exports = mongoose.model('lending', lendingSchema)
+module.exports = mongoose.model('lend', lendingSchema)

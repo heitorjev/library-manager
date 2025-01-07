@@ -1,6 +1,7 @@
 const express = require("express")
 const bodyParser = require('body-parser');
-const session = require('cookie-session')
+const session = require('cookie-session');
+const router = express.Router()
 require('dotenv').config()
 
 const app = express()
@@ -34,6 +35,31 @@ app.get('/', async (req, res) => {
 app.get('/login', async (req, res) => {
     res.render('login')
 })
+
+/*
+/
+/ DASHBOARD ROUTES
+/
+*/
+
+app.get('/dash', async (req, res) => {
+    res.render(__dirname + '/views/dash/home.ejs')
+})
+
+
+/*
+/
+/ POST ROUTES
+/
+*/
+
+
+
+app.post('/logout', async (req, res) => {
+    req.session.userId = null
+    res.redirect('/')
+})
+
 
 app.listen(process.env.PORT, () => {    
     console.warn("SERVIDOR INICIADO")
