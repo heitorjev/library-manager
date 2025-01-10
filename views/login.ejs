@@ -1,150 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login do Aluno</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .login-card {
-            background-color: #ffffff;
-            border-radius: 1rem;
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: #1f2937;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #4b5563;
-        }
-
-        input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #6366f1;
-            color: #ffffff;
-            border: none;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #4f46e5;
-        }
-
-        .forgot-password {
-            display: block;
-            text-align: center;
-            margin-top: 1rem;
-            color: #6366f1;
-            text-decoration: none;
-            font-size: 0.875rem;
-        }
-
-        .forgot-password:hover {
-            text-decoration: underline;
-        }
-
-        .signup-link {
-            display: block;
-            text-align: center;
-            margin-top: 1.5rem;
-            color: #4b5563;
-            font-size: 0.875rem;
-        }
-
-        .signup-link a {
-            color: #6366f1;
-            text-decoration: none;
-        }
-
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-
-        .error-message {
-            color: #ef4444;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="../../css/style.css">
 </head>
+
 <body>
     <div class="login-card">
-        <h1 class="login-title">Login do Aluno</h1>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="seu.email@exemplo.com" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password" required>
-                <p class="error-message" id="errorMessage"></p>
-            </div>
-            <button type="submit">Entrar</button>
-        </form>
-        <a href="#" class="forgot-password">Esqueceu a senha?</a>
-        <p class="signup-link">
-            Não tem uma conta? <a href="#">Cadastre-se</a>
-        </p>
+        <% if (user_role==='student' ){ %>
+            <h1 class="login-title">Login do Aluno</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="email@al.educacao.sp.gov.br" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" required>
+                    <p class="error-message" id="errorMessage"></p>
+                </div>
+                <button type="submit">Entrar</button>
+            </form>
+            <a href="#" class="forgot-password">Esqueceu a senha?</a>
+            <p class="signup-link">
+                Não tem uma conta? <a href="#">Cadastre-se</a>
+            </p>
+            <% }else{ %>
+                <h1 class="login-title">Login do Professor</h1>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="email@prof.educacao.sp.gov.br" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" name="password" required>
+                        <p class="error-message" id="errorMessage"></p>
+                    </div>
+                    <button type="submit">Entrar</button>
+                </form>
+                <a href="#" class="forgot-password">Esqueceu a senha?</a>
+            <% } %>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
@@ -154,12 +60,11 @@
                 errorMessage.textContent = 'Por favor, preencha todos os campos.';
                 errorMessage.style.display = 'block';
             } else {
-                // Aqui você normalmente faria uma chamada para o servidor
-                console.log('Tentativa de login com:', email, password);
-                errorMessage.style.display = 'none';
-                alert('Tentativa de login bem-sucedida! (Isso é apenas uma simulação)');
+                fazerLogin(email, password);
             }
         });
     </script>
+    <script src="js/login.js"></script>
 </body>
+
 </html>

@@ -17,6 +17,7 @@ app.use(session({
     }
 }))
 const verify = require('./modules/verify')
+const authRoutes = require('./routes/auth')
 
 const mongoose = require('mongoose')
 const database = require('./modules/mongoose')
@@ -28,12 +29,11 @@ app.set('view engine', 'ejs')
 app.set('views', './views')
 app.use(express.static('public'))
 
+app.use('/auth', authRoutes)
+
 app.get('/', async (req, res) => {
     const books = await Book.find({})
     res.render('index', { books: books })
-})
-app.get('/login', async (req, res) => {
-    res.render('login')
 })
 
 /*
@@ -45,6 +45,8 @@ app.get('/login', async (req, res) => {
 app.get('/dash', async (req, res) => {
     res.render(__dirname + '/views/dash/home.ejs')
 })
+
+
 
 
 /*
