@@ -13,24 +13,16 @@
                 </a>
             </li>
             <li class="menu-item">
-                <a onclick="toggleSubmenu(this)" class="menu-link has-submenu <%= currentPath.includes('/books') ? 'active' : '' %>">
+                <a onclick="navigate('/dash/books')" class="menu-link <%= currentPath.includes('/books') ? 'active' : '' %>">
                     <i class="ri-book-2-line"></i>
                     <span>Livros</span>
                 </a>
-                <ul class="submenu">
-                    <li><a onclick="navigate('/dash/books')" class="submenu-link <%= currentPath === '/dash/books' ? 'active' : '' %>">Gerenciar Livros</a></li>
-                    <li><a onclick="navigate('/dash/categories')" class="submenu-link <%= currentPath === '/dash/categories' ? 'active' : '' %>">Gerenciar Categorias</a></li>
-                </ul>
             </li>
             <li class="menu-item">
-                <a onclick="toggleSubmenu(this)" class="menu-link has-submenu <%= currentPath.includes('/students') ? 'active' : '' %>">
+                <a onclick="navigate('/dash/users')" class="menu-link <%= currentPath.includes('/users') ? 'active' : '' %>">
                     <i class="ri-user-line"></i>
-                    <span>Alunos</span>
+                    <span>Usuários</span>
                 </a>
-                <ul class="submenu">
-                    <li><a onclick="navigate('/dash/students')" class="submenu-link <%= currentPath === '/dash/students' ? 'active' : '' %>">Gerenciar Alunos</a></li>
-                    <li><a onclick="navigate('/dash/rooms')" class="submenu-link <%= currentPath === '/dash/rooms' ? 'active' : '' %>">Gerenciar Salas</a></li>
-                </ul>
             </li>
             <li class="menu-item">
                 <a onclick="toggleSubmenu(this)" class="menu-link has-submenu <%= currentPath.includes('/loans') ? 'active' : '' %>">

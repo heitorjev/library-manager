@@ -22,7 +22,7 @@ const mongoose = require('mongoose')
 mongoose.connect(process.env.DB_URL).then(console.warn("DATABASE CONECTADA"))
 
 const Book = require('./models/book')
-const User = require('./models/book')
+const User = require('./models/user')
 const Lending = require('./models/lending')
 
 app.set('view engine', 'ejs')
@@ -48,7 +48,7 @@ app.get('/login/:userrole', verify.rH, async (req, res) => {
 
 app.get('/dash', verify.rl ,async (req, res) => {
     const books = await Book.find({})
-    const students = await User.find({role: 'student'})
+    const students = await User.find({ role: "student" })
     const lendings = await Lending.find({})
     const fullName = req.session.name.split(' ')
     const user = {
@@ -71,11 +71,26 @@ app.get('/dash/books', verify.rl ,async (req, res) => {
         name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
         firstLetters: `${fullName[0][0]}${fullName[fullName.length - 1][0]}`
     } 
-
+    
     res.render(__dirname + '/views/dash/books.ejs', { 
         user: user,
         books: books, 
         currentPath: '/dash/books'
+    })
+})
+app.get('/dash/users', verify.rl ,async (req, res) => {
+    const students = await User.find({ role: "student" })
+    console.log(students)
+    const fullName = req.session.name.split(' ')
+    const user = {
+        name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
+        firstLetters: `${fullName[0][0]}${fullName[fullName.length - 1][0]}`
+    } 
+    
+    res.render(__dirname + '/views/dash/users.ejs', { 
+        user: user,
+        students: students,
+        currentPath: '/dash/users'
     })
 })
 

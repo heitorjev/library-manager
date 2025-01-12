@@ -28,14 +28,18 @@
             </div>
             
             <div class="page-header">
-                <h1 class="page-title">Gerenciamento de Livros</h1>
-                <p class="page-subtitle">Gerencie o acervo da biblioteca</p>
+                <div class="page-header-content">
+                    <div>
+                        <h1 class="page-title">Gerenciamento de Livros</h1>
+                        <p class="page-subtitle">Gerencie o acervo da biblioteca</p>
+                    </div>
+                    <button class="add-button">
+                        <i class="ri-add-line"></i>
+                        Adicionar
+                    </button>
+                </div>
             </div>
 
-            <button class="add-button">
-                <i class="ri-add-line"></i>
-                Adicionar
-            </button>
             <div class="table-controls">
                 <input type="text" id="searchInput" placeholder="Procurar...">
                 <select id="itemsPerPage">
@@ -45,7 +49,7 @@
                 </select>
             </div>
             <div class="table-container">
-                <table id="booksTable">
+                <table id="booksTable" class="table">
                     <thead>
                         <tr>
                             <th>Título</th>
@@ -57,15 +61,15 @@
                     <tbody>
                         <% books.forEach(book => { %>
                             <tr data-book-id="<%= book.id %>">
-                                <td><%= book.title %></td>
-                                <td><%= book.autor %></td>
-                                <td><%= book.quantity %></td>
+                                <td data-field="title"><%= book.title %></td>
+                                <td data-field="autor"><%= book.autor %></td>
+                                <td data-field="quantity"><%= book.quantity %></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="action-button edit-book" title="Editar">
+                                        <button class="action-button" data-open-modal="editBookModal" data-row="true">
                                             <i class="ri-edit-line"></i>
                                         </button>
-                                        <button class="action-button delete-book" title="Apagar">
+                                        <button class="action-button delete" data-open-modal="deleteBookModal" data-row="true">
                                             <i class="ri-delete-bin-line"></i>
                                         </button>
                                     </div>

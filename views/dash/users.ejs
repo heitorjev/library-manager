@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <%- include('partials/menu.ejs') -%>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard da Biblioteca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="../css/dash.css">
+    <link rel="stylesheet" href="../css/table.css">
+    <link rel="stylesheet" href="../css/modal.css">
+</head>
+<body>
+    <div class="dashboard">
+        
+        <main class="main-content">
+            <div class="top-bar">
+                <button class="menu-toggle" id="menu-toggle">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div>
+                        <h1 class="page-title">Gerenciamento de Alunos</h1>
+                        <p class="page-subtitle">Gerencie os alunos com acesso a biblioteca</p>
+                    </div>
+                    <button class="add-button" data-open-modal="addStudentModal">
+                        <i class="ri-add-line"></i>
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-controls">
+                <input type="text" id="searchInput" placeholder="Procurar...">
+                <select id="itemsPerPage">
+                    <option value="5">5 por página</option>
+                    <option value="10">10 por página</option>
+                    <option value="20">20 por página</option>
+                </select>
+            </div>
+            <div class="table-container">
+                <table id="booksTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Sala</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(students.length === 0) { %>
+                            <tr>
+                                <td colspan="3" style="text-align: center;">Nenhum estudante cadastrado</td>
+                            </tr>
+                        <% }else{%>
+                        <% students.forEach(student => { %>
+                            <tr data-student-id="<%= student.id %>">
+                                <td><%= student.name %></td>
+                                <td><%= student.class %></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-button" data-open-modal="editStudentModal" data-row="true">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="action-button delete" data-open-modal="deleteStudentModal" data-row="true">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pagination"></div>
+        </main>
+        
+        <!-- Modal Adicionar Aluno -->
+        <div id="addStudentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Adicionar Novo Usuário</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStudentForm" data-action="addStudent">
+                        <div class="form-group">
+                            <label for="userType">Tipo de Usuário</label>
+                            <select id="userType" name="userType" required>
+                                <option value="">Selecione o tipo de usuário</option>
+                                <option value="student">Aluno</option>
+                                <option value="teacher">Professor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentName">Nome</label>
+                            <input type="text" id="studentName" name="name" data-field="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentClass">Sala</label>
+                            <select id="studentClass" name="class" data-field="class" required>
+                                <option value="">Selecione uma sala</option>
+                                <option value="6A">6º Ano A</option>
+                                <option value="6B">6º Ano B</option>
+                                <option value="7A">7º Ano A</option>
+                                <option value="7B">7º Ano B</option>
+                                <option value="8A">8º Ano A</option>
+                                <option value="8B">8º Ano B</option>
+                                <option value="9A">9º Ano A</option>
+                                <option value="9B">9º Ano B</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Cancelar</button>
+                    <button class="btn btn-primary" type="submit" form="addStudentForm">
+                        <i class="ri-add-line"></i>
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Editar Aluno -->
+        <div id="editStudentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Editar Aluno</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="editStudentForm">
+                        <input type="hidden" id="editStudentId" name="id">
+                        <div class="form-group">
+                            <label for="editStudentName">Nome</label>
+                            <input type="text" id="editStudentName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editStudentClass">Sala</label>
+                            <input type="text" id="editStudentClass" name="class" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Cancelar</button>
+                    <button class="btn btn-primary" type="submit" form="editStudentForm">
+                        <i class="ri-save-line"></i>
+                        Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Excluir Aluno -->
+        <div id="deleteStudentModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Excluir Aluno</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="deleteStudentId">
+                    <p>Tem certeza que deseja excluir o aluno <strong id="deleteStudentName"></strong>?</p>
+                    <p class="warning-text">Esta ação não pode ser desfeita!</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary close-modal">Cancelar</button>
+                    <button class="btn btn-danger" data-confirm-action="deleteStudent">
+                        <i class="ri-delete-bin-line"></i>
+                        Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/../../js/menu.js"></script>
+    <script src="/../../js/table.js"></script>
+    <script src="/../../js/modal.js"></script>
+    <script>
+        $(document).ready(function(){
+            const booksTable = new TableManager('booksTable', {
+                itemsPerPage: 5,
+                columns: [
+                    { field: 'title', title: 'Título' },
+                    { field: 'autor', title: 'Autor' },
+                    { field: 'quantity', title: 'Quantidade' },
+                    { field: 'actions', title: 'Ações' }
+                ],
+                sortConfig: {
+                    field: 'title',
+                    direction: 'asc'
+                }
+            });
+            
+            // Inicializar o gerenciador de modais
+            const modalManager = new ModalManager();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            window.modalManager = new ModalManager();
+            
+            // Fechar modal quando clicar fora
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        window.modalManager.closeModal(this);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

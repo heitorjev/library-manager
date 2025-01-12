@@ -1,179 +1,156 @@
 class TableManager {
-    constructor(tableId, options = {}) {
-        this.tableId = tableId;
-        this.table = $(`#${tableId}`);
+    constructor(options = {}) {
+        this.tables = $('.table');
         this.currentPage = 1;
         this.itemsPerPage = options.itemsPerPage || 5;
         this.searchInput = options.searchInput || '#searchInput';
         this.paginationContainer = options.paginationContainer || '#pagination';
         this.itemsPerPageSelector = options.itemsPerPageSelector || '#itemsPerPage';
-        this.columns = options.columns || this.detectColumns();
-        this.formatters = options.formatters || {};
-        this.sortConfig = options.sortConfig || {};
+        this.originalData = this.getTableData();
         
         this.initialize();
     }
 
-    detectColumns() {
-        const columns = [];
-        this.table.find('thead th').each(function() {
-            columns.push({
-                field: $(this).data('field') || $(this).text().toLowerCase(),
-                title: $(this).text()
-            });
-        });
-        return columns;
-    }
-
     getTableData() {
         const data = [];
-        const self = this;
-        
-        this.table.find('tbody tr').each(function() {
-            const row = {};
-            $(this).find('td').each(function(index) {
-                const column = self.columns[index];
-                row[column.field] = $(this).text();
+        this.tables.find('tbody tr').each(function() {
+            const rowData = {};
+            const cells = $(this).find('td');
+            cells.each(function(index) {
+                rowData[index] = $(this).text().trim();
             });
-            data.push(row);
+            data.push(rowData);
         });
         return data;
     }
 
-    formatCell(value, field) {
-        if (this.formatters[field]) {
-            return this.formatters[field](value);
-        }
-        return value;
-    }
-
     displayRows(page, itemsPerPage, data) {
-        const sortedData = this.sortData(data);
         const start = (page - 1) * itemsPerPage;
         const end = start + itemsPerPage;
-        const paginatedData = sortedData.slice(start, end);
+        const paginatedData = data.slice(start, end);
 
-        this.table.find("tbody").empty();
-        const self = this;
-
-        paginatedData.forEach(row => {
-            const tr = $("<tr>");
-            this.columns.forEach(column => {
-                if (column.field === 'actions') {
-                    tr.append(`
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-button" title="Editar">
-                                    <i class="ri-edit-line"></i>
-                                </button>
-                                <button class="action-button delete" title="Apagar">
-                                    <i class="ri-delete-bin-line"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `);
-                } else {
-                    const value = row[column.field];
-                    tr.append(`<td>${this.formatCell(value, column.field)}</td>`);
-                }
-            });
-            this.table.find("tbody").append(tr);
-        });
+        this.tables.find("tbody tr").hide();
+        this.tables.find("tbody tr").slice(start, end).show();
 
         this.displayPagination(data.length, page, itemsPerPage);
     }
 
-    sortData(data) {
-        if (!this.sortConfig.field) return data;
-        
-        return [...data].sort((a, b) => {
-            const valueA = a[this.sortConfig.field] || '';
-            const valueB = b[this.sortConfig.field] || '';
-            
-            // Verifica se os valores são números
-            if (!isNaN(valueA) && !isNaN(valueB)) {
-                return this.sortConfig.direction === 'asc' ? 
-                    Number(valueA) - Number(valueB) : 
-                    Number(valueB) - Number(valueA);
-            }
-            
-            // Se não forem números, trata como strings
-            return this.sortConfig.direction === 'asc' ? 
-                String(valueA).localeCompare(String(valueB)) : 
-                String(valueB).localeCompare(String(valueA));
-        });
-    }
-
     displayPagination(totalItems, currentPage, itemsPerPage) {
+        // Se o total de itens for menor ou igual aos itens por página, não mostra paginação
+        if (totalItems <= itemsPerPage) {
+            $(this.paginationContainer).empty();
+            return;
+        }
+
         const totalPages = Math.ceil(totalItems / itemsPerPage);
-        let paginationHtml = `<button class="page-btn first-page" ${currentPage === 1 ? 'disabled' : ''}>Primeiro</button>`;
+        let paginationHtml = '';
 
-        if (currentPage > 2) {
-            paginationHtml += `<button class="page-btn" data-page="1">1</button>`;
-            if (currentPage > 3) paginationHtml += '<span class="page-dots">...</span>';
+        if (totalPages > 1) {
+            paginationHtml = `
+                <button class="page-btn first-page" ${currentPage === 1 ? 'disabled' : ''}>Primeiro</button>
+                ${currentPage > 2 ? `<button class="page-btn" data-page="1">1</button>` : ''}
+                ${currentPage > 3 ? '<span class="page-dots">...</span>' : ''}
+            `;
+
+            for (let i = Math.max(1, currentPage - 1); i <= Math.min(currentPage + 1, totalPages); i++) {
+                paginationHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+
+            if (currentPage < totalPages - 1) {
+                paginationHtml += `
+                    ${currentPage < totalPages - 2 ? '<span class="page-dots">...</span>' : ''}
+                    <button class="page-btn" data-page="${totalPages}">${totalPages}</button>
+                `;
+            }
+
+            paginationHtml += `<button class="page-btn last-page" ${currentPage === totalPages ? 'disabled' : ''}>Último</button>`;
         }
 
-        const start = Math.max(1, currentPage - 1);
-        const end = Math.min(currentPage + 1, totalPages);
-        
-        for (let i = start; i <= end; i++) {
-            paginationHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
-        }
-
-        if (currentPage < totalPages - 1) {
-            if (currentPage < totalPages - 2) paginationHtml += '<span class="page-dots">...</span>';
-            paginationHtml += `<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
-        }
-
-        paginationHtml += `<button class="page-btn last-page" ${currentPage === totalPages ? 'disabled' : ''}>Último</button>`;
         $(this.paginationContainer).html(paginationHtml);
     }
 
-    initialize() {
-        const initialData = this.getTableData();
+    filterTable(searchTerm) {
         const self = this;
+        let visibleRows = [];
+        
+        this.tables.find('tbody tr').each(function() {
+            const row = $(this);
+            const text = row.text().toLowerCase();
+            if (!searchTerm || text.includes(searchTerm.toLowerCase())) {
+                visibleRows.push(row);
+                row.show();
+            } else {
+                row.hide();
+            }
+        });
 
-        this.displayRows(this.currentPage, this.itemsPerPage, initialData);
+        // Se tiver menos linhas visíveis que o itemsPerPage, mostra todas
+        if (visibleRows.length <= this.itemsPerPage) {
+            visibleRows.forEach(row => row.show());
+            this.displayPagination(visibleRows.length, 1, this.itemsPerPage);
+            return;
+        }
+
+        // Recalcula a paginação apenas para linhas visíveis
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+
+        // Esconde todas as linhas visíveis primeiro
+        visibleRows.forEach(row => row.hide());
+        
+        // Mostra apenas as linhas da página atual
+        visibleRows.slice(start, end).forEach(row => row.show());
+
+        // Atualiza paginação com o número correto de linhas visíveis
+        this.displayPagination(visibleRows.length, this.currentPage, this.itemsPerPage);
+    }
+
+    showAllRows() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+
+        this.tables.find('tbody tr').hide();
+        this.tables.find('tbody tr').slice(start, end).show();
+        
+        this.displayPagination(this.originalData.length, this.currentPage, this.itemsPerPage);
+    }
+
+    initialize() {
+        const self = this;
+        this.showAllRows();
 
         $(this.paginationContainer).on("click", ".page-btn", function() {
             if ($(this).hasClass('first-page')) {
                 self.currentPage = 1;
             } else if ($(this).hasClass('last-page')) {
-                self.currentPage = Math.ceil(initialData.length / self.itemsPerPage);
+                const totalRows = self.tables.find('tbody tr:not(:hidden)').length;
+                self.currentPage = Math.ceil(totalRows / self.itemsPerPage);
             } else {
                 self.currentPage = parseInt($(this).data("page"));
             }
-            self.displayRows(self.currentPage, self.itemsPerPage, initialData);
+            
+            const searchTerm = $(self.searchInput).val();
+            if (searchTerm) {
+                self.filterTable(searchTerm);
+            } else {
+                self.showAllRows();
+            }
         });
 
         $(this.itemsPerPageSelector).on("change", function() {
             self.itemsPerPage = parseInt($(this).val());
             self.currentPage = 1;
-            self.displayRows(self.currentPage, self.itemsPerPage, initialData);
+            self.displayRows(self.currentPage, self.itemsPerPage, self.originalData);
         });
 
-        $(this.searchInput).on("input", function() {
-            const searchTerm = $(this).val().toLowerCase();
-            const filteredData = initialData.filter(row => 
-                Object.values(row).some(value => 
-                    String(value).toLowerCase().includes(searchTerm)
-                )
-            );
-            self.currentPage = 1;
-            self.displayRows(self.currentPage, self.itemsPerPage, filteredData);
+        $(this.searchInput).on('input', function() {
+            self.currentPage = 1; // Reset para primeira página ao buscar
+            self.filterTable($(this).val());
         });
     }
 }
 
-// Exemplo de uso:
-// const booksTable = new TableManager('booksTable', {
-//     formatters: {
-//         status: (value) => `<span class="status-badge ${parseInt(value) === 1 ? 'status-available' : 'status-unavailable'}">
-//             ${parseInt(value) === 1 ? 'Disponível' : 'Indisponível'}
-//         </span>`
-//     },
-//     sortConfig: {
-//         field: 'status',
-//         direction: 'desc'
-//     }
-// });
+// Inicialização
+$(document).ready(function() {
+    new TableManager();
+});
