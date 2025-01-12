@@ -1,7 +1,6 @@
 const express = require("express")
 const bodyParser = require('body-parser');
 const session = require('cookie-session');
-const router = express.Router()
 require('dotenv').config()
 
 const app = express()
@@ -20,10 +19,11 @@ const verify = require('./modules/verify')
 const authRoutes = require('./routes/auth')
 
 const mongoose = require('mongoose')
-const database = require('./modules/mongoose')
 mongoose.connect(process.env.DB_URL).then(console.warn("DATABASE CONECTADA"))
 
 const Book = require('./models/book')
+const User = require('./models/book')
+const Lending = require('./models/lending')
 
 app.set('view engine', 'ejs')
 app.set('views', './views')
@@ -36,14 +36,47 @@ app.get('/', async (req, res) => {
     res.render('index', { books: books })
 })
 
+app.get('/login/:userrole', verify.rH, async (req, res) => {
+    res.render('login', { user_role: req.params.userrole })
+
+})
 /*
 /
 / DASHBOARD ROUTES
 /
 */
 
-app.get('/dash', async (req, res) => {
-    res.render(__dirname + '/views/dash/home.ejs')
+app.get('/dash', verify.rl ,async (req, res) => {
+    const books = await Book.find({})
+    const students = await User.find({role: 'student'})
+    const lendings = await Lending.find({})
+    const fullName = req.session.name.split(' ')
+    const user = {
+        name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
+        firstLetters: `${fullName[0][0]}${fullName[fullName.length - 1][0]}`
+    } 
+
+    res.render(__dirname + '/views/dash/home.ejs', { 
+        user: user,
+        books: books.length, 
+        students: students.length, 
+        lending: lendings.length,
+        currentPath: '/dash'
+    })
+})
+app.get('/dash/books', verify.rl ,async (req, res) => {
+    const books = await Book.find({})
+    const fullName = req.session.name.split(' ')
+    const user = {
+        name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
+        firstLetters: `${fullName[0][0]}${fullName[fullName.length - 1][0]}`
+    } 
+
+    res.render(__dirname + '/views/dash/books.ejs', { 
+        user: user,
+        books: books, 
+        currentPath: '/dash/books'
+    })
 })
 
 
@@ -55,12 +88,6 @@ app.get('/dash', async (req, res) => {
 /
 */
 
-
-
-app.post('/logout', async (req, res) => {
-    req.session.userId = null
-    res.redirect('/')
-})
 
 
 app.listen(process.env.PORT, () => {    

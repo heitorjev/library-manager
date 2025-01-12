@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <%- include('partials/menu.ejs') -%>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard da Biblioteca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="../css/dash.css">
+    <link rel="stylesheet" href="../css/table.css">
+    <link rel="stylesheet" href="../css/modal.css">
+</head>
+<body>
+    <div class="dashboard">
+        
+        <main class="main-content">
+            <div class="top-bar">
+                <button class="menu-toggle" id="menu-toggle">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+            </div>
+            <button class="add-button">
+                <i class="ri-add-line"></i>
+                Adicionar
+            </button>
+            <div class="table-controls">
+                <input type="text" id="searchInput" placeholder="Procurar...">
+                <select id="itemsPerPage">
+                    <option value="5">5 por página</option>
+                    <option value="10">10 por página</option>
+                    <option value="20">20 por página</option>
+                </select>
+            </div>
+            <div class="table-container">
+                <table id="booksTable">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Quantidade</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% books.forEach(book => { %>
+                            <tr data-book-id="<%= book.id %>">
+                                <td><%= book.title %></td>
+                                <td><%= book.autor %></td>
+                                <td><%= book.quantity %></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-button edit-book" title="Editar">
+                                            <i class="ri-edit-line"></i>
+                                        </button>
+                                        <button class="action-button delete-book" title="Apagar">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pagination"></div>
+        </main>
+        <%- include('partials/modal_book_add.ejs') -%>
+        <%- include('partials/modal_book_edit.ejs') -%>
+        <%- include('partials/modal_book_delete.ejs') -%>
+    </div>
+
+    <script src="/../../js/menu.js"></script>
+    <script src="/../../js/table.js"></script>
+    <script src="/../../js/modal.js"></script>
+    <script>
+        $(document).ready(function(){
+            const booksTable = new TableManager('booksTable', {
+                itemsPerPage: 5,
+                columns: [
+                    { field: 'title', title: 'Título' },
+                    { field: 'autor', title: 'Autor' },
+                    { field: 'quantity', title: 'Quantidade' },
+                    { field: 'actions', title: 'Ações' }
+                ],
+                sortConfig: {
+                    field: 'title',
+                    direction: 'asc'
+                }
+            });
+            
+            // Inicializar o gerenciador de modais
+            const modalManager = new ModalManager();
+        });
+    </script>
+</body>
+</html>

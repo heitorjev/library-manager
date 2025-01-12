@@ -1,3 +1,4 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <aside class="sidebar">
     <div class="logo">
         <i class="ri-book-open-line"></i>
@@ -6,47 +7,47 @@
     <nav>
         <ul class="menu">
             <li class="menu-item">
-                <a href="#" class="menu-link active">
+                <a onclick="navigate('/dash')" class="menu-link <%= currentPath === '/dash' ? 'active' : '' %>">
                     <i class="ri-dashboard-line"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="menu-item">
-                <a href="#" class="menu-link has-submenu">
+                <a onclick="toggleSubmenu(this)" class="menu-link has-submenu <%= currentPath.includes('/books') ? 'active' : '' %>">
                     <i class="ri-book-2-line"></i>
                     <span>Livros</span>
                 </a>
                 <ul class="submenu">
-                    <li><a href="#" class="submenu-link">Gerenciar Livros</a></li>
-                    <li><a href="#" class="submenu-link">Gerenciar Categorias</a></li>
+                    <li><a onclick="navigate('/dash/books')" class="submenu-link <%= currentPath === '/dash/books' ? 'active' : '' %>">Gerenciar Livros</a></li>
+                    <li><a onclick="navigate('/dash/categories')" class="submenu-link <%= currentPath === '/dash/categories' ? 'active' : '' %>">Gerenciar Categorias</a></li>
                 </ul>
             </li>
             <li class="menu-item">
-                <a href="#" class="menu-link has-submenu">
+                <a onclick="toggleSubmenu(this)" class="menu-link has-submenu <%= currentPath.includes('/students') ? 'active' : '' %>">
                     <i class="ri-user-line"></i>
                     <span>Alunos</span>
                 </a>
                 <ul class="submenu">
-                    <li><a href="#" class="submenu-link">Gerenciar Alunos</a></li>
-                    <li><a href="#" class="submenu-link">Gerenciar Salas</a></li>
+                    <li><a onclick="navigate('/dash/students')" class="submenu-link <%= currentPath === '/dash/students' ? 'active' : '' %>">Gerenciar Alunos</a></li>
+                    <li><a onclick="navigate('/dash/rooms')" class="submenu-link <%= currentPath === '/dash/rooms' ? 'active' : '' %>">Gerenciar Salas</a></li>
                 </ul>
             </li>
             <li class="menu-item">
-                <a href="#" class="menu-link has-submenu">
+                <a onclick="toggleSubmenu(this)" class="menu-link has-submenu <%= currentPath.includes('/loans') ? 'active' : '' %>">
                     <i class="ri-exchange-funds-line"></i>
                     <span>Empréstimos</span>
                 </a>
                 <ul class="submenu">
-                    <li><a href="#" class="submenu-link">Empréstimos</a></li>
-                    <li><a href="#" class="submenu-link">Devoluções</a></li>
+                    <li><a onclick="navigate('/dash/loans')" class="submenu-link <%= currentPath === '/dash/loans' ? 'active' : '' %>">Empréstimos</a></li>
+                    <li><a onclick="navigate('/dash/returns')" class="submenu-link <%= currentPath === '/dash/returns' ? 'active' : '' %>">Devoluções</a></li>
                 </ul>
             </li>
         </ul>
     </nav>
     <div class="user-info">
-        <div class="user-avatar">JD</div>
+        <div class="user-avatar"><%= user.firstLetters %></div>
         <button class="user-menu-toggle" id="user-menu-toggle">
-            <span class="user-name">João da Silva</span>
+            <span class="user-name"><%= user.name %></span>
             <i class="ri-arrow-down-s-line"></i>
         </button>
         <div class="user-dropdown" id="user-dropdown">
@@ -54,10 +55,31 @@
                 <i class="ri-user-settings-line"></i>
                 Gerenciar Perfil
             </a>
-            <a href="#" class="user-dropdown-item">
+            <a href="/auth/logout" class="user-dropdown-item">
                 <i class="ri-logout-box-r-line"></i>
                 Sair
             </a>
         </div>
     </div>
 </aside>
+
+<script>
+function toggleSubmenu(element) {
+    const submenu = element.nextElementSibling;
+    const allSubmenus = document.querySelectorAll('.submenu');
+    
+    // Fecha todos os outros submenus
+    allSubmenus.forEach(menu => {
+        if (menu !== submenu) {
+            menu.style.display = 'none';
+        }
+    });
+    
+    // Toggle do submenu atual
+    submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
+}
+
+function navigate(url) {
+    window.location.href = url;
+}
+</script>

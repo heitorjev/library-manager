@@ -1,0 +1,17 @@
+<div id="deleteBookModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Confirmar Exclusão</h2>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Tem certeza que deseja excluir o livro "<span id="deleteBookTitle"></span>"?</p>
+            <p class="warning-text">Esta ação não pode ser desfeita!</p>
+            <input type="hidden" id="deleteBookId">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>

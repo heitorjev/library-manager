@@ -1,34 +1,35 @@
 const express = require('express')
 const router = express.Router()
+const bcrypt = require('bcrypt')
 
 const User = require('../models/user')
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body
-
-    // verifica na db
-
-    user.findOne({ email }, (err, user) => {
-        if (err) {
-            return res.status(500).send()
-        }
-
+    const username = email
+    User.findOne({ username }).then(user => {
         if (!user) {
-            return res.status(404).send()
+            res.redirect('/login/student')
         }
-
-        req.session.userId = user._id
-        res.status(200).send()
+        if (user.password === password) {
+            req.session.userId = user._id
+            req.session.email = user.username
+            req.session.name = user.name
+            res.redirect('/')
+        } else {
+            res.redirect('/login/student')
+        }
     })
+
 })
 
-router.post('/logout', async (req, res) => {
+router.get('/logout', async (req, res) => {
+    //session destroy
     req.session.userId = null
+
     res.redirect('/')
 })
 
-router.get('/login/student', async (req, res) => {
-    res.render('login', { user_role: 'student' })
-})
+
 
 module.exports = router
