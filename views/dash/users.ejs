@@ -7,7 +7,6 @@
     <title>Dashboard da Biblioteca</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="../css/dash.css">
     <link rel="stylesheet" href="../css/table.css">
     <link rel="stylesheet" href="../css/modal.css">
@@ -33,7 +32,7 @@
                         <h1 class="page-title">Gerenciamento de Alunos</h1>
                         <p class="page-subtitle">Gerencie os alunos com acesso a biblioteca</p>
                     </div>
-                    <button class="add-button" data-open-modal="addStudentModal">
+                    <button class="add-button btn-md" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                         <i class="ri-add-line"></i>
                         Adicionar
                     </button>
@@ -87,100 +86,133 @@
         </main>
         
         <!-- Modal Adicionar Aluno -->
-        <div id="addStudentModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Adicionar Novo Usuário</h2>
-                    <button class="close-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <form id="addStudentForm" data-action="addStudent">
-                        <div class="form-group">
-                            <label for="userType">Tipo de Usuário</label>
-                            <select id="userType" name="userType" required>
-                                <option value="">Selecione o tipo de usuário</option>
-                                <option value="student">Aluno</option>
-                                <option value="teacher">Professor</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="studentName">Nome</label>
-                            <input type="text" id="studentName" name="name" data-field="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="studentClass">Sala</label>
-                            <select id="studentClass" name="class" data-field="class" required>
-                                <option value="">Selecione uma sala</option>
-                                <option value="6A">6º Ano A</option>
-                                <option value="6B">6º Ano B</option>
-                                <option value="7A">7º Ano A</option>
-                                <option value="7B">7º Ano B</option>
-                                <option value="8A">8º Ano A</option>
-                                <option value="8B">8º Ano B</option>
-                                <option value="9A">9º Ano A</option>
-                                <option value="9B">9º Ano B</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary close-modal">Cancelar</button>
-                    <button class="btn btn-primary" type="submit" form="addStudentForm">
-                        <i class="ri-add-line"></i>
-                        Adicionar
-                    </button>
+        <div class="modal" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="addStudentModalLabel">Adicionar Novo Usuário</h2>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addStudentForm">
+                            <div class="form-group mb-3">
+                                <label for="userType">Tipo de Usuário</label>
+                                <select class="form-control" id="userType" name="userType" required>
+                                    <option value="">Selecione o tipo de usuário</option>
+                                    <option value="student">Aluno</option>
+                                    <option value="teacher">Professor</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="studentName">Nome</label>
+                                <input type="text" class="form-control" id="studentName" name="name" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="studentClass">Sala</label>
+                                <select class="form-control" id="studentClass" name="class" required>
+                                    <option value="">Selecione uma sala</option>
+                                    <option value="6A">6º Ano A</option>
+                                    <option value="6B">6º Ano B</option>
+                                    <option value="7A">7º Ano A</option>
+                                    <option value="7B">7º Ano B</option>
+                                    <option value="8A">8º Ano A</option>
+                                    <option value="8B">8º Ano B</option>
+                                    <option value="9A">9º Ano A</option>
+                                    <option value="9B">9º Ano B</option>
+                                    <option value="PROF">Professor</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="ri-close-line"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" form="addStudentForm" class="btn btn-primary">
+                            <i class="ri-save-line"></i>
+                            Adicionar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Modal Editar Aluno -->
-        <div id="editStudentModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Editar Aluno</h2>
-                    <button class="close-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <form id="editStudentForm">
-                        <input type="hidden" id="editStudentId" name="id">
-                        <div class="form-group">
-                            <label for="editStudentName">Nome</label>
-                            <input type="text" id="editStudentName" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="editStudentClass">Sala</label>
-                            <input type="text" id="editStudentClass" name="class" required>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary close-modal">Cancelar</button>
-                    <button class="btn btn-primary" type="submit" form="editStudentForm">
-                        <i class="ri-save-line"></i>
-                        Salvar
-                    </button>
+        <div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="editStudentModalLabel">Editar Aluno</h2>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editStudentForm">
+                            <input type="hidden" id="editStudentId" name="id">
+                            <div class="form-group">
+                                <label for="editStudentName">Nome</label>
+                                <input type="text" class="form-control" id="editStudentName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editStudentClass">Sala</label>
+                                <select class="form-control" id="editStudentClass" name="class" required>
+                                    <option value="">Selecione uma sala</option>
+                                    <option value="6A">6º Ano A</option>
+                                    <option value="6B">6º Ano B</option>
+                                    <option value="7A">7º Ano A</option>
+                                    <option value="7B">7º Ano B</option>
+                                    <option value="8A">8º Ano A</option>
+                                    <option value="8B">8º Ano B</option>
+                                    <option value="9A">9º Ano A</option>
+                                    <option value="9B">9º Ano B</option>
+                                    <option value="PROF">Professor</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="ri-close-line"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" form="editStudentForm" class="btn btn-primary">
+                            <i class="ri-save-line"></i>
+                            Salvar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Modal Excluir Aluno -->
-        <div id="deleteStudentModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Excluir Aluno</h2>
-                    <button class="close-modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="deleteStudentId">
-                    <p>Tem certeza que deseja excluir o aluno <strong id="deleteStudentName"></strong>?</p>
-                    <p class="warning-text">Esta ação não pode ser desfeita!</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary close-modal">Cancelar</button>
-                    <button class="btn btn-danger" data-confirm-action="deleteStudent">
-                        <i class="ri-delete-bin-line"></i>
-                        Excluir
-                    </button>
+        <div class="modal fade" id="deleteStudentModal" tabindex="-1" aria-labelledby="deleteStudentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="deleteStudentModalLabel">Excluir Aluno</h2>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="deleteStudentId">
+                        <p>Tem certeza que deseja excluir o aluno <strong id="deleteStudentName"></strong>?</p>
+                        <p class="text-danger">Esta ação não pode ser desfeita!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="ri-close-line"></i>
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-danger" id="confirmDelete">
+                            <i class="ri-delete-bin-line"></i>
+                            Excluir
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -204,22 +236,82 @@
                     direction: 'asc'
                 }
             });
-            
-            // Inicializar o gerenciador de modais
-            const modalManager = new ModalManager();
         });
-    </script>
-    <script>
+
         document.addEventListener('DOMContentLoaded', function() {
-            window.modalManager = new ModalManager();
-            
-            // Fechar modal quando clicar fora
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        window.modalManager.closeModal(this);
-                    }
+            // Referências aos modais do Bootstrap
+            const editModal = new bootstrap.Modal(document.getElementById('editStudentModal'));
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteStudentModal'));
+
+            // Configurar listeners para os botões de edição
+            document.querySelectorAll('[data-open-modal="editStudentModal"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const studentId = row.dataset.studentId;
+                    const studentName = row.cells[0].textContent;
+                    const studentClass = row.cells[1].textContent;
+
+                    // Preencher o formulário de edição
+                    document.getElementById('editStudentId').value = studentId;
+                    document.getElementById('editStudentName').value = studentName;
+                    document.getElementById('editStudentClass').value = studentClass;
+
+                    // Abrir o modal
+                    editModal.show();
                 });
+            });
+
+            // Configurar listeners para os botões de deleção
+            document.querySelectorAll('[data-open-modal="deleteStudentModal"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const studentId = row.dataset.studentId;
+                    const studentName = row.cells[0].textContent;
+
+                    // Preencher os dados do modal de deleção
+                    document.getElementById('deleteStudentId').value = studentId;
+                    document.getElementById('deleteStudentName').textContent = studentName;
+
+                    // Abrir o modal
+                    deleteModal.show();
+                });
+            });
+
+            // Manipular submissão do formulário de edição
+            document.getElementById('editStudentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Aqui você implementa a lógica para salvar as alterações
+                // Após salvar, feche o modal
+                editModal.hide();
+            });
+
+            // Manipular confirmação de deleção
+            document.getElementById('confirmDelete').addEventListener('click', function() {
+                const studentId = document.getElementById('deleteStudentId').value;
+                // Aqui você implementa a lógica para deletar o estudante
+                // Após deletar, feche o modal
+                deleteModal.hide();
+            });
+
+            // Adicionar manipulador para o modal de adicionar
+            const addModal = new bootstrap.Modal(document.getElementById('addStudentModal'));
+            
+            // Manipular submissão do formulário de adicionar
+            document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Coletar dados do formulário
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
+                
+                // Aqui você implementa a lógica para adicionar o estudante
+                console.log('Dados do novo estudante:', data);
+                
+                // Limpar formulário
+                this.reset();
+                
+                // Fechar modal
+                addModal.hide();
             });
         });
     </script>

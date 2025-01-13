@@ -80,7 +80,6 @@ app.get('/dash/books', verify.rl ,async (req, res) => {
 })
 app.get('/dash/users', verify.rl ,async (req, res) => {
     const students = await User.find({ role: "student" })
-    console.log(students)
     const fullName = req.session.name.split(' ')
     const user = {
         name: `${fullName[0]} ${fullName[fullName.length - 1]}`,

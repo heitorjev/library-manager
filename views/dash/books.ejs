@@ -33,7 +33,7 @@
                         <h1 class="page-title">Gerenciamento de Livros</h1>
                         <p class="page-subtitle">Gerencie o acervo da biblioteca</p>
                     </div>
-                    <button class="add-button">
+                    <button class="add-button btn-md" data-bs-toggle="modal" data-bs-target="#addBookModal">
                         <i class="ri-add-line"></i>
                         Adicionar
                     </button>
@@ -66,10 +66,19 @@
                                 <td data-field="quantity"><%= book.quantity %></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="action-button" data-open-modal="editBookModal" data-row="true">
+                                        <button class="action-button edit-book" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editBookModal"
+                                                data-book-title="<%= book.title %>"
+                                                data-book-autor="<%= book.autor %>"
+                                                data-book-quantity="<%= book.quantity %>"
+                                                data-book-publisher="<%= book.publisher %>"
+                                                data-book-year="<%= book.year %>"
+                                                data-book-isbn="<%= book.isbn %>"
+                                                data-book-id="<%= book.id %>">
                                             <i class="ri-edit-line"></i>
                                         </button>
-                                        <button class="action-button delete" data-open-modal="deleteBookModal" data-row="true">
+                                        <button class="action-button delete" data-bs-toggle="modal" data-bs-target="#deleteBookModal">
                                             <i class="ri-delete-bin-line"></i>
                                         </button>
                                     </div>
@@ -88,7 +97,6 @@
 
     <script src="/../../js/menu.js"></script>
     <script src="/../../js/table.js"></script>
-    <script src="/../../js/modal.js"></script>
     <script>
         $(document).ready(function(){
             const booksTable = new TableManager('booksTable', {
@@ -104,9 +112,21 @@
                     direction: 'asc'
                 }
             });
-            
-            // Inicializar o gerenciador de modais
-            const modalManager = new ModalManager();
+
+            // Adicionar evento para carregar dados no modal de edição
+            $('.edit-book').on('click', function() {
+                const button = $(this);
+                const modal = $('#editBookModal');
+                
+                // Preencher os campos do formulário
+                modal.find('#editBookId').val(button.data('book-id'));
+                modal.find('#editTitle').val(button.data('book-title'));
+                modal.find('#editAutor').val(button.data('book-autor'));
+                modal.find('#editQuantity').val(button.data('book-quantity'));
+                modal.find('#editPublisher').val(button.data('book-publisher'));
+                modal.find('#editYear').val(button.data('book-year'));
+                modal.find('#editIsbn').val(button.data('book-isbn'));
+            });
         });
     </script>
 </body>

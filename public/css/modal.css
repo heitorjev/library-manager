@@ -174,3 +174,20 @@
 .modal.show {
     display: block;
 }
+
+.btn-close {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.btn-close i {
+    font-size: 24px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
