@@ -3,34 +3,38 @@ const mongoose = require('mongoose')
 
 const lendingSchema = new mongoose.Schema({
     bookID: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'book',
         required: true
     },
     studentID: {
         type: String,
         required: true
     },
-    quantity: {
-        type: Number,
-        required: true,
-        min: 1
+    studentName: {
+        type: String,
+        required: true
     },
-    returning: {
+    bookName: {
+        type: String,
+        required: true
+    },
+    returnDate: {
         type: Date,
         default: null
     },
-    lending: {
+    lendingDate: {
         type: Date,
         required: true,
-        default: Date.now()
+        default: Date.now
     },
     status: {
-        type: Number,
-        enum: [0, 1],  // 0 = emprestado, 1 = devolvido
-        default: 0
+        type: String,
+        enum: ['emprestado', 'devolvido'],
+        default: 'emprestado'
     }
 }, {
     timestamps: true
 })
 
-module.exports = mongoose.model('lend', lendingSchema)
+module.exports = mongoose.model('lending', lendingSchema)

@@ -299,23 +299,14 @@
     <script>
         $(document).ready(function() {
             // Inicialização da tabela
-            const booksTable = new TableManager('booksTable', {
+            const tableManager = new TableManager({
                 itemsPerPage: 5,
-                formatters: {
-                    status: (value) => {
-                        const isAvailable = parseInt(value) === 1;
-                        return `<span class="status-badge ${isAvailable ? 'status-available' : 'status-unavailable'}">
-                            ${isAvailable ? 'Disponível' : 'Indisponível'}
-                        </span>`;
-                    }
-                },
-                sortConfig: {
-                    field: 'status',
-                    direction: 'desc'
-                }
+                searchInput: '#searchInput',
+                paginationContainer: '#pagination',
+                itemsPerPageSelector: '#itemsPerPage'
             });
 
-            // Código existente do popup de login
+            // Código do popup de login
             $("#loginBtn").click(function() {
                 $("#loginPopup").fadeIn();
             });

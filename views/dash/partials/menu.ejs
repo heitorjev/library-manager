@@ -26,14 +26,10 @@
                 </a>
             </li>
             <li class="menu-item">
-                <a onclick="toggleSubmenu(this)" class="menu-link has-submenu <%= currentPath.includes('/loans') ? 'active' : '' %>">
+                <a onclick="navigate('/dash/loans')" class="menu-link <%= currentPath === '/dash/loans' ? 'active' : '' %>">
                     <i class="ri-exchange-funds-line"></i>
                     <span>Empréstimos</span>
                 </a>
-                <ul class="submenu">
-                    <li><a onclick="navigate('/dash/loans')" class="submenu-link <%= currentPath === '/dash/loans' ? 'active' : '' %>">Empréstimos</a></li>
-                    <li><a onclick="navigate('/dash/returns')" class="submenu-link <%= currentPath === '/dash/returns' ? 'active' : '' %>">Devoluções</a></li>
-                </ul>
             </li>
         </ul>
     </nav>
@@ -57,22 +53,30 @@
 </aside>
 
 <script>
-function toggleSubmenu(element) {
-    const submenu = element.nextElementSibling;
-    const allSubmenus = document.querySelectorAll('.submenu');
-    
-    // Fecha todos os outros submenus
-    allSubmenus.forEach(menu => {
-        if (menu !== submenu) {
-            menu.style.display = 'none';
-        }
-    });
-    
-    // Toggle do submenu atual
-    submenu.style.display = submenu.style.display === 'none' ? 'block' : 'none';
-}
-
 function navigate(url) {
     window.location.href = url;
+}
+
+// Adicionar controle do menu mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const userMenuToggle = document.getElementById('user-menu-toggle');
+    const userDropdown = document.getElementById('user-dropdown');
+    
+    userMenuToggle.addEventListener('click', function() {
+        userDropdown.classList.toggle('open');
+    });
+
+    // Fechar dropdown ao clicar fora
+    document.addEventListener('click', function(e) {
+        if (!userMenuToggle.contains(e.target) && !userDropdown.contains(e.target)) {
+            userDropdown.classList.remove('open');
+        }
+    });
+});
+
+// Controle do menu mobile
+function toggleMobileMenu() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.querySelector('.menu-toggle').classList.toggle('open');
 }
 </script>

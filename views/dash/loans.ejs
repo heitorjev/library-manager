@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empréstimos - BiblioTech</title>
+    <link rel="stylesheet" href="/css/dash.css">
+    <link rel="stylesheet" href="/css/table.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard">
+        <button class="menu-toggle" onclick="toggleMobileMenu()">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        <%- include('partials/menu.ejs') %>
+        
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-content">
+                    <div>
+                        <h1 class="page-title">Empréstimos</h1>
+                        <p class="page-subtitle">Gerencie os empréstimos de livros</p>
+                    </div>
+                    <button class="add-button btn-md" onclick="openNewLoanModal()">
+                        <i class="ri-add-line"></i>
+                        Novo Empréstimo
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-controls">
+                <input type="text" id="searchInput" placeholder="Pesquisar empréstimos...">
+                <select id="statusFilter" aria-label="Filtrar por status">
+                    <option value="all">Todos os Status</option>
+                    <option value="emprestado">Em andamento</option>
+                    <option value="devolvido">Devolvidos</option>
+                </select>
+                <select id="itemsPerPage">
+                    <option value="5">5 por página</option>
+                    <option value="10">10 por página</option>
+                    <option value="20">20 por página</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table id="loansTable">
+                    <thead>
+                        <tr>
+                            <th>Livro</th>
+                            <th>Estudante</th>
+                            <th>Data Empréstimo</th>
+                            <th>Data Devolução</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (loans.length === 0) { %>
+                            <tr>
+                                <td colspan="6">
+                                    <div class="no-data">
+                                        <i class="ri-inbox-archive-line"></i>
+                                        <p>Nenhum registro encontrado</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% } else { %>
+                            <% loans.forEach(loan => { %>
+                                <tr data-status="<%= loan.status %>">
+                                    <td><%= loan.bookID.title %></td>
+                                    <td><%= loan.studentName %></td>
+                                    <td><%= new Date(loan.lendingDate).toLocaleDateString() %></td>
+                                    <td><%= loan.returnDate ? new Date(loan.returnDate).toLocaleDateString() : '-' %></td>
+                                    <td>
+                                        <span class="status-badge <%= loan.status === 'emprestado' ? 'status-unavailable' : 'status-available' %>">
+                                            <%= loan.status === 'emprestado' ? 'Em andamento' : 'Devolvido' %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-button" onclick="viewLoan('<%= loan._id %>')">
+                                                <i class="ri-eye-line"></i>
+                                            </button>
+                                            <% if (loan.status === 'emprestado') { %>
+                                            <button class="action-button" onclick="returnBook('<%= loan._id %>')">
+                                                <i class="ri-arrow-go-back-line"></i>
+                                            </button>
+                                            <% } %>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pagination"></div>
+        </main>
+    </div>
+
+    <!-- Modal Novo Empréstimo -->
+    <div id="newLoanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Novo Empréstimo</h2>
+                <button class="btn-close" onclick="closeModal('newLoanModal')">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newLoanForm">
+                    <div class="form-group">
+                        <label for="bookId">Livro</label>
+                        <select id="bookId" name="bookId" required>
+                            <% books.forEach(book => { %>
+                                <option value="<%= book._id %>"><%= book.title %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentId">Estudante</label>
+                        <select id="studentId" name="studentId" required>
+                            <% students.forEach(student => { %>
+                                <option value="<%= student._id %>"><%= student.name %> - <%= student.class %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="dates-container">
+                        <div class="form-group">
+                            <label for="lendingDate">Data do Empréstimo</label>
+                            <input type="date" id="lendingDate" name="lendingDate" value="<%= new Date().toISOString().split('T')[0] %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="returnDate">Data de Devolução</label>
+                            <input type="date" id="returnDate" name="returnDate" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('newLoanModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveLoan()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Visualizar Empréstimo -->
+    <div id="viewLoanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalhes do Empréstimo</h2>
+                <button class="btn-close" onclick="closeModal('viewLoanModal')">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="info-group">
+                    <label>Livro</label>
+                    <p id="viewBookName"></p>
+                </div>
+                <div class="info-group">
+                    <label>Estudante</label>
+                    <p id="viewStudentName"></p>
+                </div>
+                <div class="dates-container">
+                    <div class="info-group">
+                        <label>Data do Empréstimo</label>
+                        <p id="viewLendingDate"></p>
+                    </div>
+                    <div class="info-group">
+                        <label>Data de Devolução Prevista</label>
+                        <p id="viewReturnDate"></p>
+                    </div>
+                </div>
+                <div class="info-group">
+                    <label>Status</label>
+                    <p id="viewStatus"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('viewLoanModal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Devolução -->
+    <div id="returnModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirmar Devolução</h2>
+                <button class="btn-close" onclick="closeModal('returnModal')">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Confirma a devolução do livro <strong id="returnBookName"></strong>?</p>
+                <input type="hidden" id="returnLoanId">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('returnModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="confirmReturn()">Confirmar Devolução</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/table.js"></script>
+    <script>
+        const tableManager = new TableManager({
+            itemsPerPage: 5,
+            searchInput: '#searchInput',
+            paginationContainer: '#pagination',
+            itemsPerPageSelector: '#itemsPerPage'
+        });
+
+        function openNewLoanModal() {
+            document.getElementById('newLoanModal').classList.add('show');
+            // Carregar livros e estudantes via AJAX
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function saveLoan() {
+            // Implementar lógica de salvamento
+        }
+
+        function viewLoan(id) {
+            const loan = loans.find(l => l._id === id);
+            if (loan) {
+                document.getElementById('viewBookName').textContent = loan.bookName;
+                document.getElementById('viewStudentName').textContent = loan.studentName;
+                document.getElementById('viewLendingDate').textContent = new Date(loan.lendingDate).toLocaleDateString();
+                document.getElementById('viewReturnDate').textContent = loan.returnDate ? new Date(loan.returnDate).toLocaleDateString() : '-';
+                document.getElementById('viewStatus').textContent = loan.status === 'emprestado' ? 'Em andamento' : 'Devolvido';
+                document.getElementById('viewLoanModal').classList.add('show');
+            }
+        }
+
+        function returnBook(id) {
+            const loan = loans.find(l => l._id === id);
+            if (loan) {
+                document.getElementById('returnBookName').textContent = loan.bookName;
+                document.getElementById('returnLoanId').value = loan._id;
+                document.getElementById('returnModal').classList.add('show');
+            }
+        }
+
+        async function confirmReturn() {
+            const loanId = document.getElementById('returnLoanId').value;
+            try {
+                const response = await fetch('/api/loans/return', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ loanId })
+                });
+
+                if (response.ok) {
+                    closeModal('returnModal');
+                    window.location.reload();
+                } else {
+                    alert('Erro ao processar devolução');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao processar devolução');
+            }
+        }
+
+        // Adicionar variável global para armazenar os empréstimos
+        const loans = "<%- JSON.stringify(loans) %>"
+
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            const status = this.value;
+            const rows = document.querySelectorAll('#loansTable tbody tr[data-status]');
+            
+            rows.forEach(row => {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
