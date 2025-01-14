@@ -74,7 +74,7 @@
                         <% } else { %>
                             <% loans.forEach(loan => { %>
                                 <tr data-status="<%= loan.status %>">
-                                    <td><%= loan.bookID.title %></td>
+                                    <td><%= loan.bookName %></td>
                                     <td><%= loan.studentName %></td>
                                     <td><%= new Date(loan.lendingDate).toLocaleDateString() %></td>
                                     <td><%= loan.returnDate ? new Date(loan.returnDate).toLocaleDateString() : '-' %></td>
