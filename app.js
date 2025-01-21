@@ -96,7 +96,7 @@ app.get('/dash/users', verify.rl ,async (req, res) => {
 app.get('/dash/loans', verify.rl, async (req, res) => {
     const loans = await Lending.find({})
     const students = await User.find({ role: "student" })
-    const books = await Book.find({})
+    const books = await Book.find({status: 1})
 
     //newBooks sort per alphabetical order
     books.sort((a, b) => {
@@ -151,24 +151,8 @@ app.get('/dash/profile', verify.rl, async (req, res) => {
 / POST ROUTES
 /
 */
+app.use('/api', require('./routes/api'))
 
-app.post('/api/loans/return', verify.rl, async (req, res) => {
-    try {
-        const loan = await Lending.findById(req.body.loanId);
-        if (!loan) {
-            return res.status(404).json({ error: 'Empréstimo não encontrado' });
-        }
-
-        loan.status = 'devolvido';
-        loan.returnDate = new Date();
-        await loan.save();
-
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Erro ao processar devolução:', error);
-        res.status(500).json({ error: 'Erro interno do servidor' });
-    }
-});
 
 app.listen(process.env.PORT, () => {    
     console.warn("SERVIDOR INICIADO")

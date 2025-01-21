@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Management System</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/table.js"></script>
@@ -309,7 +310,6 @@
                     <tr>
                         <th data-field="title">Título</th>
                         <th data-field="autor">Autor</th>
-                        <th data-field="quantity">Quantidade</th>
                         <th data-field="status">Status</th>
                     </tr>
                 </thead>
@@ -318,7 +318,6 @@
                         <tr data-status="<%= book.status %>">
                             <td><%= book.title %></td>
                             <td><%= book.autor %></td>
-                            <td><%= book.quantity %></td>
                             <td>
                                 <span class="status-badge <%= book.status === 0 ? 'status-available' : 'status-unavailable' %>">
                                     <%= book.status === 0 ? 'Disponível' : 'Indisponível' %>

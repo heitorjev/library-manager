@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <%- include('partials/menu.ejs') -%>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard da Biblioteca</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="../css/dash.css">
-    <link rel="stylesheet" href="../css/table.css">
-    <link rel="stylesheet" href="../css/modal.css">
+    <title>Livros - BiblioTech</title>
+    <link rel="stylesheet" href="/css/dash.css">
+    <link rel="stylesheet" href="/css/table.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="dashboard">
-        
+
         <main class="main-content">
             <div class="top-bar">
-                <button class="menu-toggle" id="menu-toggle">
+                <button class="menu-toggle" id="menu-toggle" aria-label="menu">
                     <div class="hamburger">
                         <span></span>
                         <span></span>
@@ -26,7 +25,7 @@
                     </div>
                 </button>
             </div>
-            
+            <%- include('partials/menu.ejs') %>
             <div class="page-header">
                 <div class="page-header-content">
                     <div>
@@ -54,57 +53,59 @@
                         <tr>
                             <th>Título</th>
                             <th>Autor</th>
-                            <th>Quantidade</th>
+                            <th>ISBN</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% books.forEach(book => { %>
+                        <% books.forEach(book=> { %>
                             <tr data-book-id="<%= book.id %>">
-                                <td data-field="title"><%= book.title %></td>
-                                <td data-field="autor"><%= book.autor %></td>
-                                <td data-field="quantity"><%= book.quantity %></td>
+                                <td data-field="title">
+                                    <%= book.title %>
+                                </td>
+                                <td data-field="autor">
+                                    <%= book.autor %>
+                                </td>
+                                <td data-field="isbn">
+                                    <%= book.isbn %>
+                                </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="action-button edit-book" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#editBookModal"
-                                                data-book-title="<%= book.title %>"
-                                                data-book-autor="<%= book.autor %>"
-                                                data-book-quantity="<%= book.quantity %>"
-                                                data-book-publisher="<%= book.publisher %>"
-                                                data-book-year="<%= book.year %>"
-                                                data-book-isbn="<%= book.isbn %>"
-                                                data-book-id="<%= book.id %>">
+                                        <button class="action-button edit-book" data-bs-toggle="modal"
+                                            data-bs-target="#editBookModal" data-book-title="<%= book.title %>"
+                                            data-book-autor="<%= book.autor %>"
+                                            data-book-publisher="<%= book.publisher %>"
+                                            data-book-year="<%= book.year %>" data-book-isbn="<%= book.isbn %>"
+                                            data-book-id="<%= book.id %>">
                                             <i class="ri-edit-line"></i>
                                         </button>
-                                        <button class="action-button delete" data-bs-toggle="modal" data-bs-target="#deleteBookModal">
+                                        <button class="action-button delete" data-bs-toggle="modal"
+                                            data-bs-target="#deleteBookModal">
                                             <i class="ri-delete-bin-line"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                        <% }); %>
+                            <% }); %>
                     </tbody>
                 </table>
             </div>
             <div id="pagination"></div>
         </main>
         <%- include('partials/modal_book_add.ejs') -%>
-        <%- include('partials/modal_book_edit.ejs') -%>
-        <%- include('partials/modal_book_delete.ejs') -%>
+            <%- include('partials/modal_book_edit.ejs') -%>
+                <%- include('partials/modal_book_delete.ejs') -%>
     </div>
 
     <script src="/../../js/menu.js"></script>
     <script src="/../../js/table.js"></script>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function () {
             const booksTable = new TableManager('booksTable', {
                 itemsPerPage: 5,
                 columns: [
                     { field: 'title', title: 'Título' },
                     { field: 'autor', title: 'Autor' },
-                    { field: 'quantity', title: 'Quantidade' },
                     { field: 'actions', title: 'Ações' }
                 ],
                 sortConfig: {
@@ -114,15 +115,14 @@
             });
 
             // Adicionar evento para carregar dados no modal de edição
-            $('.edit-book').on('click', function() {
+            $('.edit-book').on('click', function () {
                 const button = $(this);
                 const modal = $('#editBookModal');
-                
+
                 // Preencher os campos do formulário
                 modal.find('#editBookId').val(button.data('book-id'));
                 modal.find('#editTitle').val(button.data('book-title'));
                 modal.find('#editAutor').val(button.data('book-autor'));
-                modal.find('#editQuantity').val(button.data('book-quantity'));
                 modal.find('#editPublisher').val(button.data('book-publisher'));
                 modal.find('#editYear').val(button.data('book-year'));
                 modal.find('#editIsbn').val(button.data('book-isbn'));
@@ -130,4 +130,5 @@
         });
     </script>
 </body>
+
 </html>

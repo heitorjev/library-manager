@@ -8,17 +8,21 @@
     <link rel="stylesheet" href="/css/table.css">
     <link rel="stylesheet" href="/css/modal.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/toast.css">
 </head>
 <body>
+    <div class="toast-container"></div>
     <div class="dashboard">
-        <button class="menu-toggle" onclick="toggleMobileMenu()">
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </button>
+        <div class="top-bar">
+            <button class="menu-toggle" id="menu-toggle" aria-label="menu">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+        </div>
         <%- include('partials/menu.ejs') %>
         
         <main class="main-content">
@@ -244,68 +248,6 @@
             }
         }
 
-        function returnBook(loan) {
-            try {
-                document.getElementById('returnBookName').textContent = loan.bookName;
-                document.getElementById('returnLoanId').value = loan._id;
-                document.getElementById('returnModal').classList.add('show');
-            } catch (error) {
-                console.error('Erro ao processar dados:', error);
-                alert('Erro ao preparar devolução');
-            }
-        }
-
-        async function confirmReturn() {
-            const loanId = document.getElementById('returnLoanId').value;
-            try {
-                const response = await fetch('/api/loans/return/' + loanId, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                if (response.ok) {
-                    window.location.reload();
-                } else {
-                    const error = await response.json();
-                    alert(error.message || 'Erro ao processar devolução');
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao processar devolução');
-            }
-        }
-
-        async function saveLoan() {
-            try {
-                const formData = {
-                    bookId: document.getElementById('bookId').value,
-                    studentId: document.getElementById('studentId').value,
-                    lendingDate: document.getElementById('lendingDate').value,
-                    returnDate: document.getElementById('returnDate').value
-                };
-
-                const response = await fetch('/api/loans', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    window.location.reload();
-                } else {
-                    const error = await response.json();
-                    alert(error.message || 'Erro ao criar empréstimo');
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao salvar empréstimo');
-            }
-        }
-
         // Filtro por status
         document.getElementById('statusFilter').addEventListener('change', function() {
             const status = this.value;
@@ -320,5 +262,6 @@
             });
         });
     </script>
+    <script src="../js/createFunctions.js"></script>
 </body>
 </html>

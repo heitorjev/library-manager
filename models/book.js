@@ -17,10 +17,6 @@ const bookSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    quantity:{
-        type: Number,
-        required: true
-    },
     status:{
         type: Number,
         default: 0
