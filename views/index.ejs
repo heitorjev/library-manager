@@ -85,16 +85,23 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        #itemsPerPage {
+        .controls-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .control-select {
             padding: 0.7rem 1rem;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
             font-size: 1rem;
             background-color: #fff;
             transition: all 0.3s ease;
+            min-width: 120px;
         }
 
-        #itemsPerPage:focus {
+        .control-select:focus {
             outline: none;
             border-color: #6366f1;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
@@ -226,6 +233,7 @@
         @media (max-width: 768px) {
             .table-controls {
                 flex-direction: column;
+                gap: 1rem;
             }
 
             #searchInput, #itemsPerPage {
@@ -236,12 +244,38 @@
             .table-container {
                 overflow-x: auto;
             }
+
+            .controls-right {
+                width: 100%;
+            }
+
+            .control-select {
+                flex: 1;
+            }
         }
 
         .page-dots {
             padding: 0.5rem 1rem;
             margin: 0 0.25rem;
             font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-available {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-unavailable {
+            background-color: #fee2e2;
+            color: #991b1b;
         }
     </style>
 </head>
@@ -256,11 +290,18 @@
     <main>
         <div class="table-controls">
             <input type="text" id="searchInput" placeholder="Procurar...">
-            <select id="itemsPerPage">
-                <option value="5">5 por página</option>
-                <option value="10">10 por página</option>
-                <option value="20">20 por página</option>
-            </select>
+            <div class="controls-right">
+                <select id="statusFilter" class="control-select">
+                    <option value="all">Todos os Status</option>
+                    <option value="0">Disponível</option>
+                    <option value="1">Indisponível</option>
+                </select>
+                <select id="itemsPerPage" class="control-select">
+                    <option value="5">5 por página</option>
+                    <option value="10">10 por página</option>
+                    <option value="20">20 por página</option>
+                </select>
+            </div>
         </div>
         <div class="table-container">
             <table id="booksTable">
@@ -274,11 +315,15 @@
                 </thead>
                 <tbody>
                     <% books.forEach(book => { %>
-                        <tr>
+                        <tr data-status="<%= book.status %>">
                             <td><%= book.title %></td>
                             <td><%= book.autor %></td>
                             <td><%= book.quantity %></td>
-                            <td><%= book.status %></td>
+                            <td>
+                                <span class="status-badge <%= book.status === 0 ? 'status-available' : 'status-unavailable' %>">
+                                    <%= book.status === 0 ? 'Disponível' : 'Indisponível' %>
+                                </span>
+                            </td>
                         </tr>
                     <% }); %>
                 </tbody>
@@ -304,6 +349,21 @@
                 searchInput: '#searchInput',
                 paginationContainer: '#pagination',
                 itemsPerPageSelector: '#itemsPerPage'
+            });
+
+            // Filtro por status
+            $("#statusFilter").on('change', function() {
+                const status = $(this).val();
+                const rows = $('#booksTable tbody tr[data-status]');
+                
+                rows.each(function() {
+                    const row = $(this);
+                    if (status === 'all' || row.data('status').toString() === status) {
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
+                });
             });
 
             // Código do popup de login

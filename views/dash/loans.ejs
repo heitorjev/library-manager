@@ -37,16 +37,18 @@
 
             <div class="table-controls">
                 <input type="text" id="searchInput" placeholder="Pesquisar empréstimos...">
-                <select id="statusFilter" aria-label="Filtrar por status">
-                    <option value="all">Todos os Status</option>
-                    <option value="emprestado">Em andamento</option>
-                    <option value="devolvido">Devolvidos</option>
-                </select>
-                <select id="itemsPerPage">
-                    <option value="5">5 por página</option>
-                    <option value="10">10 por página</option>
-                    <option value="20">20 por página</option>
-                </select>
+                <div class="controls-right">
+                    <select id="statusFilter" class="control-select" aria-label="Filtrar por status">
+                        <option value="all">Todos os Status</option>
+                        <option value="emprestado">Em andamento</option>
+                        <option value="devolvido">Devolvidos</option>
+                    </select>
+                    <select id="itemsPerPage" class="control-select">
+                        <option value="5">5 por página</option>
+                        <option value="10">10 por página</option>
+                        <option value="20">20 por página</option>
+                    </select>
+                </div>
             </div>
 
             <div class="table-container">
@@ -85,11 +87,11 @@
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="action-button" onclick="viewLoan('<%= loan._id %>')">
+                                            <button class="action-button" onclick='viewLoan(<%- JSON.stringify(loan) %>)'>
                                                 <i class="ri-eye-line"></i>
                                             </button>
                                             <% if (loan.status === 'emprestado') { %>
-                                            <button class="action-button" onclick="returnBook('<%= loan._id %>')">
+                                            <button class="action-button" onclick="returnBook(<%- JSON.stringify(loan) %>)>
                                                 <i class="ri-arrow-go-back-line"></i>
                                             </button>
                                             <% } %>
@@ -221,54 +223,53 @@
 
         function openNewLoanModal() {
             document.getElementById('newLoanModal').classList.add('show');
-            // Carregar livros e estudantes via AJAX
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function saveLoan() {
-            // Implementar lógica de salvamento
-        }
-
-        function viewLoan(id) {
-            const loan = loans.find(l => l._id === id);
-            if (loan) {
+        function viewLoan(loan) {
+            try {
                 document.getElementById('viewBookName').textContent = loan.bookName;
                 document.getElementById('viewStudentName').textContent = loan.studentName;
                 document.getElementById('viewLendingDate').textContent = new Date(loan.lendingDate).toLocaleDateString();
                 document.getElementById('viewReturnDate').textContent = loan.returnDate ? new Date(loan.returnDate).toLocaleDateString() : '-';
                 document.getElementById('viewStatus').textContent = loan.status === 'emprestado' ? 'Em andamento' : 'Devolvido';
+                
                 document.getElementById('viewLoanModal').classList.add('show');
+            } catch (error) {
+                console.error('Erro ao processar dados:', error);
+                alert('Erro ao visualizar detalhes do empréstimo');
             }
         }
 
-        function returnBook(id) {
-            const loan = loans.find(l => l._id === id);
-            if (loan) {
+        function returnBook(loan) {
+            try {
                 document.getElementById('returnBookName').textContent = loan.bookName;
                 document.getElementById('returnLoanId').value = loan._id;
                 document.getElementById('returnModal').classList.add('show');
+            } catch (error) {
+                console.error('Erro ao processar dados:', error);
+                alert('Erro ao preparar devolução');
             }
         }
 
         async function confirmReturn() {
             const loanId = document.getElementById('returnLoanId').value;
             try {
-                const response = await fetch('/api/loans/return', {
+                const response = await fetch('/api/loans/return/' + loanId, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ loanId })
+                    }
                 });
 
                 if (response.ok) {
-                    closeModal('returnModal');
                     window.location.reload();
                 } else {
-                    alert('Erro ao processar devolução');
+                    const error = await response.json();
+                    alert(error.message || 'Erro ao processar devolução');
                 }
             } catch (error) {
                 console.error('Erro:', error);
@@ -276,9 +277,36 @@
             }
         }
 
-        // Adicionar variável global para armazenar os empréstimos
-        const loans = "<%- JSON.stringify(loans) %>"
+        async function saveLoan() {
+            try {
+                const formData = {
+                    bookId: document.getElementById('bookId').value,
+                    studentId: document.getElementById('studentId').value,
+                    lendingDate: document.getElementById('lendingDate').value,
+                    returnDate: document.getElementById('returnDate').value
+                };
 
+                const response = await fetch('/api/loans', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const error = await response.json();
+                    alert(error.message || 'Erro ao criar empréstimo');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao salvar empréstimo');
+            }
+        }
+
+        // Filtro por status
         document.getElementById('statusFilter').addEventListener('change', function() {
             const status = this.value;
             const rows = document.querySelectorAll('#loansTable tbody tr[data-status]');

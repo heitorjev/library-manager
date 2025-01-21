@@ -112,7 +112,6 @@ app.get('/dash/loans', verify.rl, async (req, res) => {
         return 0
     })
 
-    console.log(loans)
     const fullName = req.session.name.split(' ');
     const user = {
         name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
@@ -128,6 +127,25 @@ app.get('/dash/loans', verify.rl, async (req, res) => {
     });
 });
 
+app.get('/dash/profile', verify.rl, async (req, res) => {
+    const user1 = await User.findById(req.session.userId);
+
+    const fullName = req.session.name.split(' ');
+    const user = {
+        name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
+        firstLetters: `${fullName[0][0]}${fullName[fullName.length - 1][0]}`,
+        email: user1.email,
+        passwordLength: user1.password.length,
+        class: user1.class,
+        role: user1.role.toUpperCase(),
+        email: user1.username,
+    };
+    res.render('dash/profile', {
+        user: user,
+        password: '*'.repeat(user.passwordLength),
+        currentPath: '/dash/profile'
+    });
+});
 /*
 /
 / POST ROUTES

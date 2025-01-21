@@ -127,6 +127,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    border: none;
 }
 
 .btn i {
@@ -231,6 +232,11 @@
     height: 40px;
     display: flex;
     align-items: center;
+}
+
+.modal-footer .btn {
+    border: none;
+    border-radius: 0.375rem;
 }
 
 @media (max-width: 768px) {

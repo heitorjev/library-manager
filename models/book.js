@@ -24,6 +24,8 @@ const bookSchema = new mongoose.Schema({
     status:{
         type: Number,
         default: 0
+        //0: available
+        //1: borrowed
     },
 })
 

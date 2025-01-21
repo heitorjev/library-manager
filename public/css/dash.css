@@ -500,3 +500,11 @@ body {
     font-size: 0.8rem;
     padding: 0.5rem;
 }
+
+.add-button,
+.action-button,
+.menu-toggle {
+    border: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}

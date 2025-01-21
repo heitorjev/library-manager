@@ -12,6 +12,12 @@
     flex-wrap: wrap;
 }
 
+.controls-right {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
 /* Campos de busca e filtro */
 #searchInput,
 #itemsPerPage {
@@ -82,6 +88,22 @@
 
 #searchInput:focus,
 #itemsPerPage:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.control-select {
+    padding: 0.7rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.control-select:focus {
     outline: none;
     border-color: #6366f1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
@@ -197,6 +219,14 @@ tr:hover {
     justify-content: center;
 }
 
+.action-btn,
+.action-button {
+    border: none;
+    background: none;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+}
+
 /* Status da linha */
 tr.deleted {
     background-color: #fee2e2 !important;
@@ -277,6 +307,14 @@ tr.highlight {
     #statusFilter,
     #itemsPerPage {
         width: 100%;
+    }
+
+    .controls-right {
+        width: 100%;
+    }
+
+    .control-select {
+        flex: 1;
     }
 }
 .status-badge {
