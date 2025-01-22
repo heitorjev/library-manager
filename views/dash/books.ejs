@@ -75,7 +75,6 @@
                                         <button class="action-button edit-book" data-bs-toggle="modal"
                                             data-bs-target="#editBookModal" data-book-title="<%= book.title %>"
                                             data-book-autor="<%= book.autor %>"
-                                            data-book-publisher="<%= book.publisher %>"
                                             data-book-category="<%= book.category %>"
                                             data-book-id="<%= book._id %>">
                                             <i class="ri-edit-line"></i>
@@ -138,13 +137,11 @@
                         const title = row.querySelector('[data-field="title"]').textContent.trim();
                         const autor = row.querySelector('[data-field="autor"]').textContent.trim();
                         const category = row.querySelector('[data-field="category"]').textContent.trim();
-                        const publisher = this.dataset.bookPublisher || '';
 
                         // Preencher o formulário
                         document.getElementById('editBookId').value = bookId;
                         document.getElementById('editTitle').value = title;
                         document.getElementById('editAutor').value = autor;
-                        document.getElementById('editPublisher').value = publisher;
                         document.getElementById('editCategory').value = category;
                     }
 

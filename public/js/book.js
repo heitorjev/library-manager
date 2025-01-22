@@ -35,11 +35,10 @@ async function bookEdit(){
             bookID: document.getElementById('editBookId').value,
             title: document.getElementById('editTitle').value,
             autor: document.getElementById('editAutor').value,
-            category: document.getElementById('editCategory').value,
-            publisher: document.getElementById('editPublisher').value,
+            category: document.getElementById('editCategory').value
         }
     
-        if(!book.title || !book.autor || !book.category || !book.publisher){
+        if(!book.title || !book.autor || !book.category ){
             showToast('Preencha todos os campos', 'error')
             return
         }
