@@ -7,19 +7,29 @@
                     <i class="ri-close-line"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <p>Tem certeza que deseja excluir este livro?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="ri-close-line"></i>
-                    Cancelar
-                </button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">
-                    <i class="ri-delete-bin-line"></i>
-                    Excluir
-                </button>
-            </div>
+            <form id="deleteBookForm">
+                <div class="modal-body">
+                    <input type="hidden" id="deleteBookId" name="id">
+                    <p>Tem certeza que deseja excluir este livro?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="ri-close-line"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger" onclick="deleteBook()">
+                        <i class="ri-delete-bin-line"></i>
+                        Excluir
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteBookForm = document.getElementById('deleteBookForm');
+    deleteBookForm.addEventListener('submit', async function(e) { e.preventDefault();});
+});
+</script>

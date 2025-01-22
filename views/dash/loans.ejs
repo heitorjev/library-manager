@@ -95,7 +95,7 @@
                                                 <i class="ri-eye-line"></i>
                                             </button>
                                             <% if (loan.status === 'emprestado') { %>
-                                            <button class="action-button" onclick="returnBook(<%- JSON.stringify(loan) %>)>
+                                            <button class="action-button" onclick="returnBook(<%= JSON.stringify(loan) %>)">
                                                 <i class="ri-arrow-go-back-line"></i>
                                             </button>
                                             <% } %>
@@ -125,9 +125,13 @@
                     <div class="form-group">
                         <label for="bookId">Livro</label>
                         <select id="bookId" name="bookId" required>
-                            <% books.forEach(book => { %>
-                                <option value="<%= book._id %>"><%= book.title %></option>
-                            <% }) %>
+                            <% if(books.length !== 0) { %>
+                                <% books.forEach(book => { %>
+                                    <option value="<%= book._id %>"><%= book.title %></option>
+                                <% }) %>
+                            <% }else{ %>
+                                <option value="" disabled selected>Nenhum livro disponível</option>
+                            <% } %>        
                         </select>
                     </div>
                     <div class="form-group">
@@ -233,21 +237,9 @@
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function viewLoan(loan) {
-            try {
-                document.getElementById('viewBookName').textContent = loan.bookName;
-                document.getElementById('viewStudentName').textContent = loan.studentName;
-                document.getElementById('viewLendingDate').textContent = new Date(loan.lendingDate).toLocaleDateString();
-                document.getElementById('viewReturnDate').textContent = loan.returnDate ? new Date(loan.returnDate).toLocaleDateString() : '-';
-                document.getElementById('viewStatus').textContent = loan.status === 'emprestado' ? 'Em andamento' : 'Devolvido';
-                
-                document.getElementById('viewLoanModal').classList.add('show');
-            } catch (error) {
-                console.error('Erro ao processar dados:', error);
-                alert('Erro ao visualizar detalhes do empréstimo');
-            }
-        }
+        
 
+        
         // Filtro por status
         document.getElementById('statusFilter').addEventListener('change', function() {
             const status = this.value;
@@ -262,6 +254,7 @@
             });
         });
     </script>
-    <script src="../js/createFunctions.js"></script>
+    <script src="../js/loans.js"></script>
+    <script src="../js/toast.js"></script>
 </body>
 </html>

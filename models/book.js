@@ -13,10 +13,6 @@ const bookSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isbn:{
-        type: String,
-        required: true
-    },
     status:{
         type: Number,
         default: 0

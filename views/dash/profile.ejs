@@ -15,6 +15,16 @@
         <%- include('partials/menu.ejs') %>
         
         <main class="main-content">
+            <div class="top-bar">
+                <button class="menu-toggle" id="menu-toggle" aria-label="menu">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+            </div>
             <div class="page-header">
                 <div class="page-header-content">
                     <div>
@@ -83,5 +93,6 @@
             </div>
         </main>
     </div>
+    <script src="../js/menu.js"></script>
 </body>
 </html>

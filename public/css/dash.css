@@ -508,3 +508,9 @@ body {
     border-radius: 0.5rem;
     transition: all 0.3s ease;
 }
+
+.more {
+    cursor: pointer;
+    text-decoration: none;
+    color: #4f46e5;
+}

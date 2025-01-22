@@ -67,6 +67,18 @@ app.get('/dash', verify.rl ,async (req, res) => {
 app.get('/dash/books', verify.rl ,async (req, res) => {
     const books = await Book.find({})
     const fullName = req.session.name.split(' ')
+    books.sort((a, b) => {
+        if(a.title > b.title) return 1
+        if(a.title < b.title) return -1
+        return 0
+    })
+
+    // if book length is bigger than 20 characters, it will be cutted
+    books.forEach(book => {
+        if(book.category.length > 20){
+            book.category = book.category.slice(0, 20) + '...'
+        }
+    })
     const user = {
         name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
         firstLetters: `${fullName[0][0]}${fullName[fullName.length - 1][0]}`
@@ -96,8 +108,7 @@ app.get('/dash/users', verify.rl ,async (req, res) => {
 app.get('/dash/loans', verify.rl, async (req, res) => {
     const loans = await Lending.find({})
     const students = await User.find({ role: "student" })
-    const books = await Book.find({status: 1})
-
+    const books = await Book.find({status: 0})
     //newBooks sort per alphabetical order
     books.sort((a, b) => {
         if(a.title > b.title) return 1

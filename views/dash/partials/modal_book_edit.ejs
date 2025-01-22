@@ -23,15 +23,9 @@
                             <label for="editPublisher">Editora</label>
                             <input type="text" class="form-control" id="editPublisher" name="publisher">
                         </div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
-                            <label for="editYear">Ano</label>
-                            <input type="number" class="form-control" id="editYear" name="year" min="1000" max="2099">
-                        </div>
-                        <div class="form-group">
-                            <label for="editIsbn">ISBN</label>
-                            <input type="text" class="form-control" id="editIsbn" name="isbn">
+                            <label for="editCategory">Categoria</label>
+                            <input type="text" class="form-control" id="editCategory" name="category">
                         </div>
                     </div>
                 </form>
@@ -41,7 +35,7 @@
                     <i class="ri-close-line"></i>
                     Cancelar
                 </button>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" onclick="bookEdit()">
                     <i class="ri-save-line"></i>
                     Salvar Alterações
                 </button>
