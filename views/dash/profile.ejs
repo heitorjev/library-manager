@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/table.css">
     <link rel="stylesheet" href="../css/modal.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/toast.css">
 </head>
 <body>
     <div class="dashboard">
@@ -93,6 +94,47 @@
             </div>
         </main>
     </div>
+    <div class="toast-container"></div>
     <script src="../js/menu.js"></script>
+    <script src="../js/toast.js"></script>
+    <script>
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                currentPassword: document.getElementById('currentPassword').value,
+                newPassword: document.getElementById('newPassword').value,
+                confirmPassword: document.getElementById('confirmPassword').value
+            };
+
+            if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
+                showToast('As senhas não coincidem!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/profile/edit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Perfil atualizado com sucesso!', 'success');
+                    setTimeout(() => window.location.reload(), 2000);
+                } else {
+                    showToast(data.error || 'Erro ao atualizar perfil', 'error');
+                }
+            } catch (error) {
+                showToast('Erro ao atualizar perfil', 'error');
+            }
+        });
+    </script>
 </body>
 </html>

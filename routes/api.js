@@ -186,31 +186,36 @@ router.post('/books/delete/:bookID', verify.rl, async (req, res) => {
 */
 router.post('/profile/edit', verify.rl, async (req, res) => {
     try {
-        const user = await Student.findById(req.user.id);
+        const user = await Student.findById(req.session.userId);
         if (!user) {
             return res.status(404).json({ error: 'Usuário não encontrado' });
         }
 
-        if (user.password !== req.body.password) {
-            return res.status(400).json({ error: 'Senha incorreta' });
+        // Verifica se a senha atual está correta
+        if (req.body.currentPassword && req.body.currentPassword !== user.password) {
+            return res.status(400).json({ error: 'Senha atual incorreta' });
         }
-
-        const password = req.body.newPassword ? req.body.newPassword : req.body.password;
 
         const newUserInfo = {
             name: req.body.name,
-            email: req.body.email,
-            class: req.body.class,
-            password: password,
+            username: req.body.email // Correção aqui também, usando username em vez de email
+        };
+
+        // Atualiza a senha apenas se uma nova senha foi fornecida
+        if (req.body.newPassword) {
+            newUserInfo.password = req.body.newPassword;
         }
 
-        await user.updateOne(newUserInfo);
-
+        await Student.updateOne({ _id: req.session.userId }, newUserInfo);
+        
+        // Atualiza o nome na sessão
+        req.session.name = req.body.name;
+        
         res.json({ success: true });
     } catch (error) {
         console.error('Erro ao editar perfil:', error);
         res.status(500).json({ error: 'Erro interno do servidor' });
     }
-})
+});
 
 module.exports = router
