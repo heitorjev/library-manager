@@ -74,7 +74,7 @@
             tbody.empty();
 
             if (data.rows.length === 0) {
-                tbody.html(`<tr><td colspan="${this.columns.length + (this.actionButtons ? 1 : 0)}" class="no-data">Nenhum registro encontrado</td></tr>`);
+                tbody.html(`<tr><td colspan="6"><div class="no-data"><i class="ri-inbox-archive-line"></i><p>Nenhum registro encontrado</p></div></td></tr>`);
                 return;
             }
 

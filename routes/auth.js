@@ -17,7 +17,7 @@ router.post('/login', async (req, res) => {
             req.session.name = user.name
             res.redirect('/')
         } else {
-            res.redirect('/login/student')
+            res.status(401).send('Usuário ou senha incorretos')
         }
     })
 

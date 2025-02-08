@@ -60,7 +60,12 @@
                     <tbody>
                         <% if(students.length === 0) { %>
                             <tr>
-                                <td colspan="3" style="text-align: center;">Nenhum estudante cadastrado</td>
+                                <td colspan="6">
+                                    <div class="no-data">
+                                        <i class="ri-inbox-archive-line"></i>
+                                        <p>Nenhum registro encontrado</p>
+                                    </div>
+                                </td>
                             </tr>
                         <% }else{%>
                         <% students.forEach(student => { %>

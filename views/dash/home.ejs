@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard da Biblioteca</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/dash.css">
     <style>
         .user-dropdown {
@@ -62,35 +62,43 @@
             <div class="recent-activities">
                 <h2 class="activities-title">Atividades Recentes</h2>
                 <ul class="activity-list">
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="ri-book-mark-line"></i>
-                        </div>
-                        <div class="activity-details">
-                            <div class="activity-title">Novo livro adicionado: "O Senhor dos Anéis"</div>
-                            <div class="activity-time">Há 2 horas</div>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="ri-user-add-line"></i>
-                        </div>
-                        <div class="activity-details">
-                            <div class="activity-title">Novo aluno registrado: Maria Santos</div>
-                            <div class="activity-time">Há 4 horas</div>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="ri-exchange-line"></i>
-                        </div>
-                        <div class="activity-details">
-                            <div class="activity-title">Livro emprestado: "1984" para Pedro Oliveira</div>
-                            <div class="activity-time">Há 1 dia</div>
-                        </div>
-                    </li>
+                    <% if (actions && actions.length > 0) { %>
+                        <% actions.forEach(activity => { %>
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <% if (activity.action_target === 'user' && activity.action_type === "create") { %>
+                                        <i class="ri-user-add-line"></i>
+                                    <% } else if (activity.action_target === 'user' && activity.action_type === "update") { %>
+                                        <i class="ri-user-settings-line"></i>
+                                    <% } else if (activity.action_target === 'user' && activity.action_type === "delete") { %>
+                                        <i class="ri-user-minus-line"></i>
+                                    <% } else if (activity.action_target === 'book' && activity.action_type === "create") { %>
+                                        <i class="ri-book-3-line"></i>
+                                    <% } else if (activity.action_target === 'book' && activity.action_type === "update") { %>
+                                        <i class="ri-book-3-line"></i>
+                                    <% } else if (activity.action_target === 'book' && activity.action_type === "delete") { %>
+                                        <i class="ri-book-3-line"></i>
+                                    <% } else if (activity.action_target === 'lending' && activity.action_type === "create") { %>
+                                        <i class="ri-arrow-go-forward-fill"></i>
+                                    <% } else if (activity.action_target === 'lending' && activity.action_type === "delete") {%>
+                                        <i class="ri-arrow-go-back-line"></i>
+                                    <% } %>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-title"><%= activity.action %></div>
+                                    <div class="activity-time"><%= new Date(activity.action_date).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) %></div>
+                                </div>
+                            </li>
+                        <% }) %>
+                    <% } else { %>
+                        <li class="activity-item no-activities">
+                            <div class="activity-details">
+                                <div class="activity-title">Nenhuma atividade recente</div>
+                            </div>
+                        </li>
+                    <% } %>
                 </ul>
-                <a href="#" class="more">Ver todos</a>
+                <a href="/dash/actions" class="more">Ver todos</a>
             </div>
         </main>
     </div>

@@ -5,6 +5,7 @@ const verify = require('../modules/verify')
 const Lending = require('../models/lending')
 const Book = require('../models/book')
 const Student = require('../models/user')
+const Action = require('../models/actions')
 
 router.post('/loans/return/:loanID', verify.rl, async (req, res) => {
     try {
@@ -19,6 +20,15 @@ router.post('/loans/return/:loanID', verify.rl, async (req, res) => {
         await loan.save();
         
         Book.updateOne({ _id: loan.bookID }, { $set: { status: '0' } }).exec();
+
+        // Registra ação de devolução
+        await Action.create({
+            action: `Livro ${loan.bookName} devolvido`,
+            action_target: 'lending',
+            action_type: 'update',
+            action_date: new Date(),
+            user: req.session.name
+        });
         
         res.json({ success: true });
     } catch (error) {
@@ -46,8 +56,18 @@ router.post('/loans/create', verify.rl, async (req, res) => {
             lendingDate: new Date(lendingDate),
         }
 
-        await Lending.create(lendingObj).then(() => {
+        await Lending.create(lendingObj).then(async () => {
             Book.updateOne({ _id: bookId }, { $set: { status: '1' } }).exec();
+
+            // Registra ação de empréstimo
+            await Action.create({
+                action: `Livro ${book.title} emprestado`,
+                action_target: 'lending',
+                action_type: 'create',
+                action_date: new Date(),
+                user: req.session.name
+            });
+
             res.json({ success: true });
         }).catch((error) => {
             console.error('Erro ao criar empréstimo:', error);
@@ -71,6 +91,16 @@ router.post('/students/create', verify.rl, async (req, res) => {
             password: null
         }
         await Student.create(student)
+
+        // Registra ação de criação de usuário
+        await Action.create({
+            action: `Usuário criado: ${student.name}`,
+            action_target: 'user',
+            action_type: 'create',
+            action_date: new Date(),
+            user: req.session.name
+        });
+
         res.json({ success: true });
     } catch (error) {
         console.error('Erro ao criar usuário:', error);
@@ -92,6 +122,15 @@ router.post('/students/edit/:studentID', verify.rl, async (req, res) => {
 
         await student.updateOne(newStudentInfo);
 
+        // Registra ação de edição de usuário
+        await Action.create({
+            action: `Usuário editado: ${newStudentInfo.name}`,
+            action_target: 'user',
+            action_type: 'update',
+            action_date: new Date(),
+            user: req.session.name
+        });
+
         res.json({ success: true });
     } catch (error) {
         console.error('Erro ao deletar estudante:', error);
@@ -107,6 +146,16 @@ router.post('/students/delete/:studentID', verify.rl, async (req, res) => {
         }
 
         await student.deleteOne({ _id: req.params.studentID });
+
+        // Registra ação de exclusão de usuário
+        await Action.create({
+            action: `Usuário apagado: ${student.name}`,
+            action_target: 'user',
+            action_type: 'delete',
+            action_date: new Date(),
+            user: req.session.name
+        });
+
         res.json({ success: true });
     } catch (error) {
         console.error('Erro ao deletar estudante:', error);
@@ -128,7 +177,16 @@ router.post('/books/create', verify.rl, async (req, res) => {
             status: 0
         }
 
-        await Book.create(book).then(() => {
+        await Book.create(book).then(async () => {
+            // Registra ação de criação de livro
+            await Action.create({
+                action: `Livro criado: ${book.title}`,
+                action_target: 'book',
+                action_type: 'create',
+                action_date: new Date(),
+                user: req.session.name
+            });
+
             res.json({ success: true });
         }).catch((error) => {
             console.error('Erro ao criar livro:', error);
@@ -155,6 +213,15 @@ router.post('/books/edit/:bookID', verify.rl, async (req, res) => {
 
         await book.updateOne(newBookInfo);
 
+        // Registra ação de edição de livro
+        await Action.create({
+            action: `Livro editado: ${newBookInfo.title}`,
+            action_target: 'book',
+            action_type: 'update',
+            action_date: new Date(),
+            user: req.session.name
+        });
+
         res.json({ success: true });
     } catch (error) {
         console.error('Erro ao editar livro:', error);
@@ -171,6 +238,16 @@ router.post('/books/delete/:bookID', verify.rl, async (req, res) => {
         }
 
         await Book.deleteOne({ _id: req.params.bookID });
+
+        // Registra ação de exclusão de livro
+        await Action.create({
+            action: `Livro apagado: ${book.title}`,
+            action_target: 'book',
+            action_type: 'delete',
+            action_date: new Date(),
+            user: req.session.name
+        });
+
         res.json({ success: true });
     } catch (error) {
         console.error('Erro ao deletar livro:', error);
@@ -261,6 +338,8 @@ router.post('/profile/edit', verify.rl, async (req, res) => {
         res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
+
+
 
 
 

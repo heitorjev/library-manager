@@ -24,6 +24,7 @@ mongoose.connect(process.env.DB_URL).then(console.warn("DATABASE CONECTADA"))
 const Book = require('./models/book')
 const User = require('./models/user')
 const Lending = require('./models/lending')
+const Action = require('./models/actions')
 
 app.set('view engine', 'ejs')
 app.set('views', './views')
@@ -50,6 +51,10 @@ app.get('/dash', verify.rl ,async (req, res) => {
     const books = await Book.find({})
     const students = await User.find({ role: "student" })
     const lendings = await Lending.find({})
+    const actions = await Action.find({})
+        .sort({ action_date: -1 }) // Ordenar por data mais recente
+        .limit(3) // Limitar a 3 registros
+    
     const fullName = req.session.name.split(' ')
     const user = {
         name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
@@ -61,6 +66,7 @@ app.get('/dash', verify.rl ,async (req, res) => {
         books: books.length, 
         students: students.length, 
         lending: lendings.length,
+        actions: actions, // Passar as ações para o template
         currentPath: '/dash'
     })
 })
@@ -131,6 +137,22 @@ app.get('/dash/loans', verify.rl, async (req, res) => {
         currentPath: '/dash/loans'
     });
 });
+app.get('/dash/actions', verify.rl, async (req, res) => {
+    const actions = await Action.find({})
+    const fullName = req.session.name.split(' ');
+    const user = {
+        name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
+        firstLetters: `${fullName[0][0]}${fullName[fullName.length - 1][0]}`
+    };
+
+    
+    
+    res.render('dash/actions', { 
+        user: user,
+        activities: actions,
+        currentPath: '/dash/actions'
+    });
+})
 
 app.get('/dash/profile', verify.rl, async (req, res) => {
     const user1 = await User.findById(req.session.userId);
@@ -236,11 +258,46 @@ app.get('/api/public/books/page', async (req, res) => {
     }
 });
 
+app.get('/api/actions/page', verify.rl, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const search = req.query.search || '';
+        const skip = (page - 1) * limit;
 
+        let query = {};
+        if (search) {
+            query = {
+                $or: [
+                    { action: { $regex: search, $options: 'i' } },
+                    { action_target: { $regex: search, $options: 'i' } },
+                    { user: { $regex: search, $options: 'i' } }
+                ]
+            };
+        }
 
+        const [rows, total] = await Promise.all([
+            Action.find(query)
+                .sort({ action_date: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Action.countDocuments(query)
+        ]);
 
+        res.json({
+            rows,
+            total,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit)
+        });
+    } catch (error) {
+        console.error('Erro ao buscar ações:', error);
+        res.status(500).json({ error: 'Erro ao buscar ações' });
+    }
+});
 
 app.listen(process.env.PORT, () => {    
-    console.warn("[INFO] SERVIDOR INICIADO")
+    console.warn("[INFO] SERVIDOR INICIADO", process.env.PORT)
 })
 
