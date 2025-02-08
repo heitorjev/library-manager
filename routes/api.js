@@ -178,6 +178,50 @@ router.post('/books/delete/:bookID', verify.rl, async (req, res) => {
     }
 })
 
+router.get('/books/page', verify.rl, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const search = req.query.search || '';
+        const skip = (page - 1) * limit;
+
+        // Primeiro busca apenas o total para paginação
+        const total = await Book.countDocuments(
+            search ? {
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { autor: { $regex: search, $options: 'i' } },
+                    { category: { $regex: search, $options: 'i' } }
+                ]
+            } : {}
+        );
+
+        // Depois busca apenas os dados da página atual
+        const rows = await Book.find(
+            search ? {
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { autor: { $regex: search, $options: 'i' } },
+                    { category: { $regex: search, $options: 'i' } }
+                ]
+            } : {}
+        )
+            .sort({ title: 1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+
+        res.json({
+            rows,
+            total,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit)
+        });
+    } catch (error) {
+        console.error('Erro ao buscar livros:', error);
+        res.status(500).json({ error: 'Erro ao buscar livros' });
+    }
+});
 
 /*
 /
@@ -217,5 +261,32 @@ router.post('/profile/edit', verify.rl, async (req, res) => {
         res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
+
+
+
+//
+//
+//
+//   FORGOT PASSWORD ROUTES
+//
+//
+
+router.post('/forgot-password', async (req, res) => {
+    try {
+
+        const { email } = req.body;
+
+        
+
+
+
+
+    }
+    catch (error) {
+        console.error('Erro ao solicitar recuperação de senha:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+})
+
 
 module.exports = router

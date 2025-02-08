@@ -55,6 +55,7 @@
                             <th>Título</th>
                             <th>Autor</th>
                             <th>Categoria</th>
+                            <th>Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -69,6 +70,11 @@
                                 </td>
                                 <td data-field="category">
                                     <%= book.category %>
+                                </td>
+                                <td data-field="status">
+                                    <span class="status-badge <%= book.status === 0 ? 'available' : 'borrowed' %>">
+                                        <%= book.status === 0 ? 'Disponível' : 'Emprestado' %>
+                                    </span>
                                 </td>
                                 <td>
                                     <div class="action-buttons">
@@ -102,16 +108,33 @@
     <script>
         $(document).ready(function () {
             const booksTable = new TableManager('booksTable', {
+                endpoint: '/api/books/page',
                 itemsPerPage: 5,
                 columns: [
                     { field: 'title', title: 'Título' },
                     { field: 'autor', title: 'Autor' },
-                    { field: 'actions', title: 'Ações' }
+                    { field: 'category', title: 'Categoria' },
+                    { 
+                        field: 'status', 
+                        title: 'Status'
+                    }
                 ],
-                sortConfig: {
-                    field: 'title',
-                    direction: 'asc'
-                }
+                actionButtons: (row) => `
+                    <button class="action-button edit-book" data-bs-toggle="modal"
+                        data-bs-target="#editBookModal" 
+                        data-book-id="${row._id}"
+                        data-book-title="${row.title}"
+                        data-book-autor="${row.autor}"
+                        data-book-category="${row.category}"
+                        data-book-status="${row.status}">
+                        <i class="ri-edit-line"></i>
+                    </button>
+                    <button class="action-button delete delete-book" data-bs-toggle="modal"
+                        data-bs-target="#deleteBookModal" 
+                        data-book-id="${row._id}">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                `
             });
         });
 

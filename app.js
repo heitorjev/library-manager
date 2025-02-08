@@ -65,30 +65,24 @@ app.get('/dash', verify.rl ,async (req, res) => {
     })
 })
 app.get('/dash/books', verify.rl ,async (req, res) => {
+    // Carregar apenas os primeiros 5 livros
+    const limit = 5;
     const books = await Book.find({})
-    const fullName = req.session.name.split(' ')
-    books.sort((a, b) => {
-        if(a.title > b.title) return 1
-        if(a.title < b.title) return -1
-        return 0
-    })
-
-    // if book length is bigger than 20 characters, it will be cutted
-    books.forEach(book => {
-        if(book.category.length > 20){
-            book.category = book.category.slice(0, 20) + '...'
-        }
-    })
+        .sort({ title: 1 })
+        .limit(limit)
+        .lean();
+    
+    const fullName = req.session.name.split(' ');
     const user = {
         name: `${fullName[0]} ${fullName[fullName.length - 1]}`,
         firstLetters: `${fullName[0][0]}${fullName[fullName.length - 1][0]}`
-    } 
+    };
     
-    res.render(__dirname + '/views/dash/books.ejs', { 
+    res.render('dash/books.ejs', { 
         user: user,
         books: books, 
         currentPath: '/dash/books'
-    })
+    });
 })
 app.get('/dash/users', verify.rl ,async (req, res) => {
     const students = await User.find({ role: "student" })
@@ -165,7 +159,88 @@ app.get('/dash/profile', verify.rl, async (req, res) => {
 app.use('/api', require('./routes/api'))
 
 
+app.get('/api/books/page', verify.rl, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const search = req.query.search || '';
+        const skip = (page - 1) * limit;
+
+        let query = {};
+        if (search) {
+            query = {
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { autor: { $regex: search, $options: 'i' } },
+                    { category: { $regex: search, $options: 'i' } }
+                ]
+            };
+        }
+
+        const [rows, total] = await Promise.all([
+            Book.find(query)
+                .sort({ title: 1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Book.countDocuments(query)
+        ]);
+
+        res.json({
+            rows,
+            total,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit)
+        });
+    } catch (error) {
+        console.error('Erro ao buscar livros:', error);
+        res.status(500).json({ error: 'Erro ao buscar livros' });
+    }
+});
+
+app.get('/api/public/books/page', async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const search = req.query.search || '';
+        const skip = (page - 1) * limit;
+
+        let query = {};
+        if (search) {
+            query = {
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { autor: { $regex: search, $options: 'i' } }
+                ]
+            };
+        }
+
+        const [rows, total] = await Promise.all([
+            Book.find(query)
+                .sort({ title: 1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            Book.countDocuments(query)
+        ]);
+
+        res.json({
+            rows,
+            total,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit)
+        });
+    } catch (error) {
+        console.error('Erro ao buscar livros:', error);
+        res.status(500).json({ error: 'Erro ao buscar livros' });
+    }
+});
+
+
+
+
+
 app.listen(process.env.PORT, () => {    
-    console.warn("SERVIDOR INICIADO")
+    console.warn("[INFO] SERVIDOR INICIADO")
 })
 

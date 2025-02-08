@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/table.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -26,9 +27,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .logo img {
@@ -59,6 +68,11 @@
             padding: 2rem;
             max-width: 1200px;
             margin: 0 auto;
+            padding-top: 1.5rem;
+        }
+
+        .hero {
+            display: none;
         }
 
         .table-controls {
@@ -67,8 +81,9 @@
             margin-bottom: 1rem;
             background-color: #fff;
             padding: 1rem;
-            border-radius: 12px;
+            border-radius: 16px 16px 0 0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e5e7eb;
         }
 
         #searchInput {
@@ -111,8 +126,8 @@
         .table-container {
             overflow-x: auto;
             background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         table {
@@ -253,6 +268,23 @@
             .control-select {
                 flex: 1;
             }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+                padding: 0 1rem;
+            }
+
+            .table-controls {
+                padding: 1rem;
+            }
+
+            .status-badge {
+                padding: 0.375rem 1rem;
+            }
         }
 
         .page-dots {
@@ -266,17 +298,55 @@
             border-radius: 9999px;
             font-size: 0.875rem;
             font-weight: 500;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .status-available {
             background-color: #dcfce7;
-            color: #166534;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .status-available i {
+            color: #16a34a;
+            font-size: 1rem;
         }
 
         .status-unavailable {
             background-color: #fee2e2;
-            color: #991b1b;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        .status-unavailable i {
+            color: #dc2626;
+            font-size: 1rem;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #e5e7eb;
+            border-top-color: #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
     </style>
 </head>
@@ -285,7 +355,8 @@
         <div class="logo">
             <img src="https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo1.png" alt="Logo" width="150">
         </div>
-        <button id="loginBtn" class="login-btn">Entrar</button>
+        <!--<button id="loginBtn" class="login-btn">Entrar</button>-->
+        <button class="login-btn" onclick="window.location.replace('/login/teacher')">Entrar</button>
     </header>
 
     <main>
@@ -314,12 +385,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% books.forEach(book => { %>
+                    <% books.slice(0, 5).forEach(book => { %>
                         <tr data-status="<%= book.status %>">
                             <td><%= book.title %></td>
                             <td><%= book.autor %></td>
                             <td>
                                 <span class="status-badge <%= book.status === 0 ? 'status-available' : 'status-unavailable' %>">
+                                    <i class="ri-<%= book.status === 0 ? 'checkbox-circle-line' : 'close-circle-line' %>"></i>
                                     <%= book.status === 0 ? 'Disponível' : 'Indisponível' %>
                                 </span>
                             </td>
@@ -342,12 +414,24 @@
 <script src="/js/table.js"></script>
     <script>
         $(document).ready(function() {
-            // Inicialização da tabela
-            const tableManager = new TableManager({
+            // Inicialização da tabela com configuração similar ao books.ejs
+            const tableManager = new TableManager('booksTable', {
+                endpoint: '/api/public/books/page', // Note a mudança para o endpoint público
                 itemsPerPage: 5,
-                searchInput: '#searchInput',
-                paginationContainer: '#pagination',
-                itemsPerPageSelector: '#itemsPerPage'
+                columns: [
+                    { field: 'title', title: 'Título' },
+                    { field: 'autor', title: 'Autor' },
+                    { 
+                        field: 'status',
+                        title: 'Status',
+                        render: (status) => `
+                            <span class="status-badge ${status === 0 ? 'status-available' : 'status-unavailable'}">
+                                <i class="ri-${status === 0 ? 'checkbox-circle-line' : 'close-circle-line'}"></i>
+                                ${status === 0 ? 'Disponível' : 'Indisponível'}
+                            </span>
+                        `
+                    }
+                ]
             });
 
             // Filtro por status
@@ -355,14 +439,14 @@
                 const status = $(this).val();
                 const rows = $('#booksTable tbody tr[data-status]');
                 
-                rows.each(function() {
-                    const row = $(this);
-                    if (status === 'all' || row.data('status').toString() === status) {
-                        row.show();
-                    } else {
-                        row.hide();
-                    }
-                });
+                if (status === 'all') {
+                    rows.show();
+                } else {
+                    rows.hide().filter(`[data-status="${status}"]`).show();
+                }
+                
+                // Atualizar paginação após filtrar
+                tableManager.displayPagination(rows.filter(':visible').length, 1);
             });
 
             // Código do popup de login
